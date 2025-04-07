@@ -1,0 +1,23 @@
+---
+import { getTranslations } from "../../lib/directus";
+import type { BlockRichtext } from "../../lib/directus.types";
+import { i18nConfig } from "../../lib/i18n";
+
+interface Props {
+  block: BlockRichtext;
+}
+
+const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+const block = Astro.props.block;
+const translations = getTranslations(block.translations, language);
+const content = translations?.content;
+---
+
+<div
+  class="my-6 mx-auto prose dark:prose-invert
+  prose-h1:font-bold prose-h1:text-xl
+  prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
+  prose-headings:underline"
+>
+  <Fragment set:html={content} />
+</div>

@@ -1,0 +1,14 @@
+---
+
+---
+
+<button aria-label="toggle menu" class="hamburger flex-grow md:hidden">
+  <span class="line"></span>
+  <span class="line"></span>
+  <span class="line"></span>
+</button>
+<script is:inline>
+  document.querySelector(".hamburger").addEventListener("click", () => {
+    document.querySelector(".nav-links").classList.toggle("hidden");
+  });
+</script>

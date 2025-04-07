@@ -1,0 +1,29 @@
+---
+import type { Globals } from "../lib/directus.types";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  socialLinks: NonNullable<Globals["social_links"]>;
+}
+
+const items = Astro.props.socialLinks;
+---
+
+<footer class="mt-6 py-6">
+  <div class="pb-2 md:flex items-end gap-4">
+    {
+      items.map(({ icon, title, url }) => (
+        <a href={url} class="hover:underline my-2 flex items-end gap-1">
+          <Icon class="w-6 h-6" name={`fa-brands:${icon}`} />
+          <span class="text-lg leading-none capitalize">{title}</span>
+        </a>
+      ))
+    }
+  </div>
+  <p class="text-sm">
+    <em>Artist Portfolio</em> theme by <a
+      class="underline"
+      target="_blank"
+      href="https://juan.djara.dev">juandjara</a>
+  </p>
+</footer>

@@ -1,0 +1,71 @@
+---
+import type { GetStaticPathsOptions, GetStaticPathsResult } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import directus, { getTranslations } from "../../lib/directus";
+import { readItems } from "@directus/sdk";
+import type { PageBlocks } from "../../lib/directus.types";
+import Blocks from "../../components/Blocks.astro";
+import { i18nConfig } from "../../lib/i18n";
+
+export async function getStaticPaths(options: GetStaticPathsOptions) {
+  const pages = await directus.request(
+    readItems("pages", {
+      filter: {
+        status: {
+          _eq: "published",
+        },
+      },
+      fields: [
+        "*",
+        { translations: ["*"] },
+        {
+          blocks: [
+            "*",
+            {
+              item: {
+                block_posts: ["*"],
+                block_categories: ["*", { categories: ["*"] }],
+                block_form: ["*"],
+                block_gallery: ["*"],
+                block_heading: ["*", { translations: ["*"] }],
+                block_hero: ["*", { translations: ["*"] }],
+                block_richtext: ["*", { translations: ["*"] }],
+              },
+            },
+          ],
+        },
+      ],
+    }),
+  );
+
+  return i18nConfig.locales
+    .map((lang) => {
+      return pages
+        .filter((p) => {
+          if (p.permalink === "/") {
+            return false;
+          }
+          return !!p.permalink;
+        })
+        .map((p) => {
+          const translations = getTranslations(p.translations, lang);
+          const title = translations?.title ?? "";
+
+          return {
+            params: { lang, slug: p.permalink! },
+            props: { title, blocks: p.blocks },
+          };
+        }) satisfies GetStaticPathsResult;
+    })
+    .flat();
+}
+
+const title = Astro.props.title;
+const blocks = Astro.props.blocks.filter(
+  (b) => b && typeof b !== "string",
+) as PageBlocks[];
+---
+
+<BaseLayout pageTitle={title}>
+  <Blocks blocks={blocks} />
+</BaseLayout>

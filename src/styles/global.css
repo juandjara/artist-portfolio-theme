@@ -1,0 +1,95 @@
+@import "./fonts.css";
+
+:root {
+  --background-light: #ebe8db;
+  --panel-light: #d76c82;
+  --panel-transparent-light: color-mix(
+    in oklab,
+    var(--panel-light) 30%,
+    transparent
+  );
+  --link-light: #b03052;
+  --text-light: #3d0301;
+
+  --background-dark: #56021f;
+  --panel-dark: #7d1c4a;
+  --panel-transparent-dark: color-mix(
+    in oklab,
+    var(--panel-dark) 30%,
+    transparent
+  );
+  --link-dark: #d17d98;
+  --text-dark: #f4cce9;
+}
+
+html {
+  background-color: var(--background-light);
+  color: var(--text-light);
+  height: 100%;
+  min-height: 100%;
+}
+html.dark {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.bg-primary {
+  background-color: var(--panel-light);
+}
+.dark .bg-primary {
+  background-color: var(--panel-dark);
+}
+
+a,
+.text-link {
+  color: var(--link-light);
+}
+.dark a,
+.dark .text-link {
+  color: var(--link-dark);
+}
+
+p,
+.text-primary {
+  color: var(--text-light);
+}
+
+.dark p,
+.dark .text-primary {
+  color: var(--text-dark);
+}
+
+body {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1280px;
+  padding: 1rem;
+}
+
+/* nav styles */
+.hamburger {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.hamburger .line {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin-bottom: 10px;
+  background-color: var(--panel-light);
+}
+.dark .hamburger .line {
+  background-color: var(--panel-dark);
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  background-color: var(--panel-transparent-light);
+}
+
+.dark .nav-links a:hover,
+.dark .nav-links a:focus {
+  background-color: var(--panel-transparent-dark);
+}

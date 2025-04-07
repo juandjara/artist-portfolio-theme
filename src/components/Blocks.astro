@@ -1,0 +1,43 @@
+---
+import type { PageBlockItem, PageBlocks } from "../lib/directus.types";
+import Categories from "./blocks/Categories.astro";
+import Heading from "./blocks/Heading.astro";
+import RichText from "./blocks/RichText.astro";
+
+interface Props {
+  blocks: PageBlocks[];
+}
+
+const blocks = (Astro.props.blocks ?? [])
+  .filter((b) => !b.hide_block && b.item)
+  .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+---
+
+<div class="blocks">
+  {
+    blocks.map((b) => {
+      const componentMap = {
+        block_richtext: RichText,
+        block_heading: Heading,
+        block_categories: Categories,
+      };
+      const Component = (componentMap[
+        b.collection as keyof typeof componentMap
+      ] || (() => `Component "${b.collection}" not found`)) as ({
+        block,
+      }: {
+        block: PageBlockItem;
+      }) => null;
+
+      return (
+        <section class={`${b.background} ${b.collection} my-2`}>
+          <div
+            class={`${b.collection}-inner px-3 py-1 rounded-lg dark:bg-[var(--background-dark)]`}
+          >
+            <Component block={b.item as PageBlockItem} />
+          </div>
+        </section>
+      );
+    })
+  }
+</div>

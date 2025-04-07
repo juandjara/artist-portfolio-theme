@@ -1,0 +1,9 @@
+---
+const lang = Astro.currentLocale;
+---
+
+<div class="mx-3">
+  <a href="/es-ES" class:list={[{ "font-bold": lang === "es-ES" }]}> ES </a>
+  <span> | </span>
+  <a href="/en-US" class:list={[{ "font-bold": lang === "en-US" }]}> EN </a>
+</div>

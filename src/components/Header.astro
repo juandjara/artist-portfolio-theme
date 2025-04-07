@@ -1,0 +1,46 @@
+---
+import Hamburger from "./Hamburger.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import LanguageToggle from "./LanguageToggle.astro";
+
+interface Props {
+  favicon: string;
+  menuItems: { url: string; title: string }[];
+  title: string;
+  description: string;
+}
+const items = Astro.props.menuItems;
+const favicon = Astro.props.favicon;
+const title = Astro.props.title;
+const description = Astro.props.description;
+---
+
+<header>
+  <nav class="flex flex-wrap justify-end items-center">
+    <a href="/" class="flex items-center md:items-end gap-2">
+      <img
+        class="w-20 h-20 rounded-full border-2 border-gray-300"
+        src={favicon}
+        alt="drawing of my face"
+      />
+      <div>
+        <h1 class="text-4xl font-medium">{title}</h1>
+        <p class="text-lg">{description}</p>
+      </div>
+    </a>
+    <Hamburger />
+    <ul class="nav-links py-3 hidden md:flex items-center gap-2 flex-grow justify-end">
+      {
+        items.map(({ url, title }) => (
+          <li>
+            <a class="uppercase block text-2xl px-4 py-2 font-bold rounded-lg" href={url}>
+              {title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <LanguageToggle />
+    <ThemeToggle />
+  </nav>
+</header>
