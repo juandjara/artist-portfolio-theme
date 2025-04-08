@@ -1,0 +1,19 @@
+---
+import Posts from "../../../components/blocks/Posts.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro"
+import { i18nConfig } from "../../../lib/i18n";
+
+export function getStaticPaths() {
+  return i18nConfig.locales.map((lang) => ({ params: { lang } }));
+}
+
+const pageTitle = ({
+  'es-ES': 'Archivo',
+  'en-US': 'Archive'
+})[Astro.params.lang]
+---
+<BaseLayout pageTitle={pageTitle}>
+  <section class="my-2 px-3 py-1">
+    <Posts />
+  </section>
+</BaseLayout>

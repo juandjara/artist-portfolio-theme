@@ -1,0 +1,63 @@
+---
+import { formatImageURL, getCategories, getPosts } from "../../lib/directus"
+import { i18nConfig } from "../../lib/i18n"
+
+interface Props {
+  categoryId?: string
+}
+
+const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+const categoryId = Astro.props.categoryId
+
+const [_categories, _posts] = await Promise.all([
+  getCategories(language),
+  getPosts(categoryId ?? null, language)
+])
+
+const categories = _categories.filter((c) => c.status === 'visible')
+const { numProtected, posts } = _posts
+
+const all = ({
+  'es-ES': 'Todos',
+  'en-US': 'All'
+})[language]
+
+categories.unshift({
+  background: '',
+  id: '',
+  link: `/${language}/archive`,
+  name: all,
+  status: ''
+})
+
+---
+<div class="-mx-2 pb-4 border-b border-rose-800">
+  <ul class="mx-2 flex flex-wrap justify-center gap-3">
+    {categories.map((c) => (
+      <li>
+        <a class="px-3 py-1 text-lg shadow hover:shadow-md transition-colors hover:bg-rose-100/50 dark:hover:bg-rose-100/20 rounded-lg border border-rose-800 dark:border-rose-300" href={c.link}>{c.name}</a>
+      </li>
+    ))}
+  </ul>
+</div>
+<div class={`my-3 grid gap-3 flex-wrap grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}>
+  {posts.map((p) => (
+    <div>
+      <a
+        href={`/post/${p.slug}`}
+        class="w-full aspect-square group flex justify-center items-center relative overflow-hidden rounded-md transition-shadow shadow-xs hover:shadow-md shadow-rose-900 dark:shadow-rose-200"
+      >
+        <div class="transform-3d transition-transform group-hover:scale-110 duration-300 ease-out absolute z-10 inset-0">
+          <img
+            class="w-full h-full object-cover object-center rounded-md"
+            src={formatImageURL(p.image as string)}
+            alt={p.title}
+          />
+        </div>
+      </a>
+      {p.title ? (
+        <p class="py-1">{p.title}</p>
+      ) : null}
+    </div>
+  ))}
+</div>

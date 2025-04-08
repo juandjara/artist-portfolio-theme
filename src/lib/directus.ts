@@ -1,6 +1,8 @@
 import {
   authentication,
   createDirectus,
+  readItem,
+  readItems,
   rest,
   staticToken,
   type DirectusFile,
@@ -13,6 +15,7 @@ import type {
   Posts,
   TranslationsCommon,
 } from "./directus.types";
+import { getRelativeLocaleUrl } from "astro:i18n";
 
 const directus = createDirectus<DBSchema>(import.meta.env.DIRECTUS_URL)
   .with(rest())
@@ -64,7 +67,7 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
         if (translations?.title) {
           title = translations?.title;
         }
-        url = page.permalink ?? "";
+        url = getRelativeLocaleUrl(lang, page.permalink ?? "", { normalizeLocale: false });
       }
       if (m.type === "post") {
         const post = m.post as Posts;
@@ -72,9 +75,71 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
         if (translations?.title) {
           title = translations?.title;
         }
-        url = `/post/${post.slug}`;
+        url = getRelativeLocaleUrl(lang, `/post/${post.slug}`, { normalizeLocale: false });
       }
 
       return { url, title };
     });
+}
+
+export async function getPosts(categoryId: string | null, language: string) {
+  let numProtected = 0
+  let rows = [] as Posts[]
+
+  if (categoryId) {
+    const category = await directus.request(readItem('categories', categoryId, {
+      fields: [{
+        posts: ['*', {
+          posts_id: ['*', {
+            translations: ['*']
+          }]
+        }]
+      }]
+    }))
+    const allPosts = (category.posts ?? []).map((p) => p.posts_id as Posts)
+    const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
+    numProtected = allPosts.length - unprotectedPosts.length
+    rows = unprotectedPosts
+  } else {
+    const allPosts = await directus.request(readItems('posts', {
+      fields: ["*", { translations: ["*"] }]
+    })) as Posts[]
+    const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
+    numProtected = 0 //allPosts.length - unprotectedPosts.length
+    rows = unprotectedPosts
+  }
+
+  return {
+    numProtected,
+    posts: rows.map((p) => {
+      const translations = getTranslations(p.translations, language)
+      const title = translations?.title ?? ''
+      const content = translations?.content ?? ''
+      return {
+        id: p.id,
+        title,
+        content,
+        image: p.image,
+        slug: p.slug,
+      }
+    })
+  }
+}
+
+export async function getCategories(language: string) {
+  const rows = await directus.request(readItems('categories', {
+    fields: ["*", { translations: ["*"] }]
+  }))
+  return rows.map((category) => {
+    const translations = getTranslations(category.translations, language);
+    const name = translations?.name;
+  
+    return {
+      name,
+      id: category.id,
+      status: category.status,
+      background: category.background,
+      link: getRelativeLocaleUrl(language, `/archive/${category.id}`, { normalizeLocale: false })
+    };
+  });
 }

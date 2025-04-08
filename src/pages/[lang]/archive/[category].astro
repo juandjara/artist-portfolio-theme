@@ -1,0 +1,33 @@
+---
+import type { GetStaticPathsResult } from "astro";
+import Posts from "../../../components/blocks/Posts.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCategories } from "../../../lib/directus";
+import { i18nConfig } from "../../../lib/i18n";
+
+export async function getStaticPaths() {
+  const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+  const categories = await getCategories(language)
+
+  return i18nConfig.locales.map((lang) => {
+    return categories.map((cat) => {
+      return {
+        params: { category: cat.id, lang },
+        props: { category: cat }
+      }
+    }) satisfies GetStaticPathsResult;
+  }).flat()
+}
+
+const category = Astro.props.category
+const pageTitle = ({
+  'es-ES': 'Archivo',
+  'en-US': 'Archive'
+})[Astro.params.lang]
+
+---
+<BaseLayout pageTitle={pageTitle}>
+  <section class="my-2 px-3 py-1">
+    <Posts categoryId={category.id} />
+  </section>
+</BaseLayout>

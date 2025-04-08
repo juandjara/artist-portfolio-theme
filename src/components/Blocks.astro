@@ -2,6 +2,7 @@
 import type { PageBlockItem, PageBlocks } from "../lib/directus.types";
 import Categories from "./blocks/Categories.astro";
 import Heading from "./blocks/Heading.astro";
+import Posts from "./blocks/Posts.astro";
 import RichText from "./blocks/RichText.astro";
 
 interface Props {
@@ -20,6 +21,7 @@ const blocks = (Astro.props.blocks ?? [])
         block_richtext: RichText,
         block_heading: Heading,
         block_categories: Categories,
+        block_posts: Posts,
       };
       const Component = (componentMap[
         b.collection as keyof typeof componentMap

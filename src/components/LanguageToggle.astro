@@ -1,9 +1,16 @@
 ---
-const lang = Astro.currentLocale;
+import { i18nConfig } from "../lib/i18n";
+
+const lang = Astro.currentLocale ?? i18nConfig.defaultLocale;
+const url = Astro.url.toString();
+
+const esURL = url.replace(lang, 'es-ES')
+const enURL = url.replace(lang, 'en-US')
+
 ---
 
 <div class="mx-3">
-  <a href="/es-ES" class:list={[{ "font-bold": lang === "es-ES" }]}> ES </a>
+  <a href={esURL} class:list={[{ "font-bold": lang === "es-ES" }]}> ES </a>
   <span> | </span>
-  <a href="/en-US" class:list={[{ "font-bold": lang === "en-US" }]}> EN </a>
+  <a href={enURL} class:list={[{ "font-bold": lang === "en-US" }]}> EN </a>
 </div>

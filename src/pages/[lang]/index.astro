@@ -28,7 +28,6 @@ const pages = await directus.request(
           {
             item: {
               block_posts: ["*"],
-              // @ts-ignore '*.*' is not added to the types
               block_categories: [
                 "*",
                 {
@@ -58,7 +57,7 @@ const title = translation?.title ?? "";
 const blocks = pages[0]?.blocks as PageBlocks[];
 ---
 
-<BaseLayout pageTitle={title}>
+<BaseLayout>
   <!-- <h2>{description}</h2> -->
   <Blocks blocks={blocks} />
 </BaseLayout>

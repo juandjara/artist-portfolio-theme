@@ -683,6 +683,7 @@ export type Posts = {
   sort?: number | null;
   status: string;
   translations: UUID[] | PostsTranslations[];
+  tags?: string | null
 };
 
 export type PostsTranslations = {

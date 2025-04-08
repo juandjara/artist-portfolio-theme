@@ -12,6 +12,10 @@ import { readItems, readSingleton } from "@directus/sdk";
 import type { NavigationItems } from "../lib/directus.types";
 import { i18nConfig } from "../lib/i18n";
 
+interface Props {
+  pageTitle?: string
+}
+
 const { pageTitle } = Astro.props;
 
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
@@ -32,8 +36,8 @@ const menus = await directus.request(
   }),
 );
 
-const headerMenuItems = (menus.find((s) => s.slug === "header-menu")?.items ??
-  []) as NavigationItems[];
+const headerMenu = menus.find((s) => s.slug === "header-menu")
+const headerMenuItems = (headerMenu?.items ?? []) as NavigationItems[];
 const items = parseMenuItems(headerMenuItems, language);
 
 const global = await directus.request(
@@ -41,6 +45,7 @@ const global = await directus.request(
     fields: ["favicon", "social_links", { translations: ["*"] }],
   }),
 );
+
 const translations = getTranslations(global.translations, language);
 const title = pageTitle ?? translations?.title;
 const description = translations?.description ?? "";
@@ -64,7 +69,9 @@ const favicon = formatImageURL(global.favicon as string) ?? "";
       title={translations?.title ?? ""}
       description={description}
     />
-    <!-- <h2 class="text-link mt-12 mb-1 text-5xl">{title}</h2> -->
+    {pageTitle ? (
+      <h2 class="text-link mt-12 text-3xl max-w-prose mx-auto">{pageTitle}</h2>
+    ) : null}
     <main class="flex-grow">
       <slot />
     </main>
