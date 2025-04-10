@@ -7,11 +7,11 @@ interface Props {
 }
 
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
-const categoryId = Astro.props.categoryId
+const categoryId = Astro.props.categoryId ?? null
 
 const [_categories, _posts] = await Promise.all([
   getCategories(language),
-  getPosts(categoryId ?? null, language)
+  getPosts(categoryId, language)
 ])
 
 const categories = _categories.filter((c) => c.status === 'visible')
@@ -24,18 +24,31 @@ const all = ({
 
 categories.unshift({
   background: '',
-  id: '',
+  id: 'all',
   link: `/${language}/archive`,
   name: all,
   status: ''
 })
+
+function isCatSelected(id: string) {
+  return id === (categoryId ?? 'all')
+}
 
 ---
 <div class="-mx-2 pb-4 border-b border-rose-800">
   <ul class="mx-2 flex flex-wrap justify-center gap-3">
     {categories.map((c) => (
       <li>
-        <a class="px-3 py-1 text-lg shadow hover:shadow-md transition-colors hover:bg-rose-100/50 dark:hover:bg-rose-100/20 rounded-lg border border-rose-800 dark:border-rose-300" href={c.link}>{c.name}</a>
+        <a
+          href={c.link}
+          class:list={[
+            {
+              'bg-rose-100 dark:bg-rose-900/50': isCatSelected(c.id),
+              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.id)
+            },
+            'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-rose-800 dark:border-rose-300'
+          ]}
+        >{c.name}</a>
       </li>
     ))}
   </ul>
