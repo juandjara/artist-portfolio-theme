@@ -23,7 +23,7 @@ const categories = block.categories.map((c) => {
   return {
     name,
     background: category.background,
-    link: getRelativeLocaleUrl(language, `/posts?category=${category.id}`, { normalizeLocale: false })
+    link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
   };
 });
 ---
@@ -50,3 +50,7 @@ const categories = block.categories.map((c) => {
     ))
   }
 </ul>
+<a
+  href={getRelativeLocaleUrl(language, `/archive`, { normalizeLocale: false })}
+  class="text-center block w-full text-lg font-semibold mt-4"
+>Ver todo</a>

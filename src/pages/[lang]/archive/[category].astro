@@ -1,9 +1,10 @@
 ---
 import type { GetStaticPathsResult } from "astro";
-import Posts from "../../../components/blocks/Posts.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { getCategories } from "../../../lib/directus";
+import { getCategories, getPage, getTranslations } from "../../../lib/directus";
 import { i18nConfig } from "../../../lib/i18n";
+import type { PageBlocks } from "../../../lib/directus.types";
+import Blocks from "../../../components/Blocks.astro";
 
 export async function getStaticPaths() {
   const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
@@ -12,22 +13,20 @@ export async function getStaticPaths() {
   return i18nConfig.locales.map((lang) => {
     return categories.map((cat) => {
       return {
-        params: { category: cat.id, lang },
-        props: { category: cat }
+        params: { category: cat.permalink ?? '', lang },
       }
     }) satisfies GetStaticPathsResult;
   }).flat()
 }
 
-const category = Astro.props.category
-const pageTitle = ({
-  'es-ES': 'Archivo',
-  'en-US': 'Archive'
-})[Astro.params.lang]
+const page = await getPage('/archive')
+const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
+const translation = getTranslations(page?.translations, language);
+const title = translation?.title ?? "";
+const blocks = page?.blocks as PageBlocks[];
 
 ---
-<BaseLayout pageTitle={pageTitle}>
-  <section class="my-2 px-3 py-1">
-    <Posts categoryId={category.id} />
-  </section>
+
+<BaseLayout pageTitle={title}>
+  <Blocks blocks={blocks} />
 </BaseLayout>

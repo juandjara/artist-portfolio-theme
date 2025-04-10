@@ -7,6 +7,7 @@ interface Props {
 }
 
 const items = Astro.props.socialLinks;
+const editUrl = import.meta.env.DIRECTUS_URL
 ---
 
 <footer class="mt-6 py-6">
@@ -26,4 +27,5 @@ const items = Astro.props.socialLinks;
       target="_blank"
       href="https://juan.djara.dev">juandjara</a>
   </p>
+  <a class="text-sm font-medium block" href={editUrl}>Edit</a>
 </footer>

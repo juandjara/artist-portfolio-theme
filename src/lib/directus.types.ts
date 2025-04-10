@@ -95,8 +95,9 @@ export type BlockRichtextTranslations = {
 };
 
 export type Category = {
-  background?: string | DirectusFiles | null;
   id: string;
+  background?: string | DirectusFiles | null;
+  permalink?: string | null;
   password?: string | null;
   posts: UUID[] | CategoriesPosts[];
   sort?: number | null;

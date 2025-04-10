@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import directus, { getTranslations } from "../../lib/directus";
+import directus, { getPage, getTranslations } from "../../lib/directus";
 import { readItems } from "@directus/sdk";
 import type { PageBlocks } from "../../lib/directus.types";
 import Blocks from "../../components/Blocks.astro";
@@ -10,51 +10,13 @@ export function getStaticPaths() {
   return i18nConfig.locales.map((lang) => ({ params: { lang } }));
 }
 
-const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
+const page = await getPage('/')
 
-const pages = await directus.request(
-  readItems("pages", {
-    filter: {
-      permalink: {
-        _eq: "/",
-      },
-    },
-    fields: [
-      "*",
-      { translations: ["*"] },
-      {
-        blocks: [
-          "*",
-          {
-            item: {
-              block_posts: ["*"],
-              block_categories: [
-                "*",
-                {
-                  categories: [
-                    "*",
-                    { categories_id: ["*", { translations: ["*"] }] },
-                  ],
-                },
-              ],
-              block_form: ["*"],
-              block_gallery: ["*"],
-              block_heading: ["*", { translations: ["*"] }],
-              block_hero: ["*", { translations: ["*"] }],
-              block_richtext: ["*", { translations: ["*"] }],
-            },
-          },
-        ],
-      },
-    ],
-    limit: 1,
-  }),
-);
-
-const translation = getTranslations(pages[0]?.translations, language);
-const title = translation?.title ?? "";
+// const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
+// const translation = getTranslations(page?.translations, language);
+// const title = translation?.title ?? "";
 // const description = translation?.description ?? ''
-const blocks = pages[0]?.blocks as PageBlocks[];
+const blocks = page?.blocks as PageBlocks[];
 ---
 
 <BaseLayout>

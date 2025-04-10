@@ -87,7 +87,12 @@ export async function getPosts(categoryId: string | null, language: string) {
   let rows = [] as Posts[]
 
   if (categoryId) {
-    const category = await directus.request(readItem('categories', categoryId, {
+    const categories = await directus.request(readItems('categories', {
+      filter: {
+        permalink: {
+          _eq: categoryId
+        }
+      },
       fields: [{
         posts: ['*', {
           posts_id: ['*', {
@@ -96,7 +101,8 @@ export async function getPosts(categoryId: string | null, language: string) {
         }]
       }]
     }))
-    const allPosts = (category.posts ?? []).map((p) => p.posts_id as Posts)
+    const category = categories[0]
+    const allPosts = (category?.posts ?? []).map((p) => p.posts_id as Posts)
     const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
     numProtected = allPosts.length - unprotectedPosts.length
     rows = unprotectedPosts
@@ -139,7 +145,50 @@ export async function getCategories(language: string) {
       id: category.id,
       status: category.status,
       background: category.background,
-      link: getRelativeLocaleUrl(language, `/archive/${category.id}`, { normalizeLocale: false })
+      permalink: category.permalink,
+      link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
     };
   });
+}
+
+export async function getPage(link: string) {
+  const pages = await directus.request(
+    readItems("pages", {
+      filter: {
+        permalink: {
+          _eq: link,
+        },
+      },
+      fields: [
+        "*",
+        { translations: ["*"] },
+        {
+          blocks: [
+            "*",
+            {
+              item: {
+                block_posts: ["*"],
+                block_categories: [
+                  "*",
+                  {
+                    categories: [
+                      "*",
+                      { categories_id: ["*", { translations: ["*"] }] },
+                    ],
+                  },
+                ],
+                block_form: ["*"],
+                block_gallery: ["*"],
+                block_heading: ["*", { translations: ["*"] }],
+                block_hero: ["*", { translations: ["*"] }],
+                block_richtext: ["*", { translations: ["*"] }],
+              },
+            },
+          ],
+        },
+      ],
+      limit: 1,
+    }),
+  );
+  return pages[0]
 }

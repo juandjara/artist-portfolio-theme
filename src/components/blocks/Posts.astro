@@ -2,12 +2,8 @@
 import { formatImageURL, getCategories, getPosts } from "../../lib/directus"
 import { i18nConfig } from "../../lib/i18n"
 
-interface Props {
-  categoryId?: string
-}
-
+const categoryId = Astro.params.category ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
-const categoryId = Astro.props.categoryId ?? null
 
 const [_categories, _posts] = await Promise.all([
   getCategories(language),
@@ -25,6 +21,7 @@ const all = ({
 categories.unshift({
   background: '',
   id: 'all',
+  permalink: 'all',
   link: `/${language}/archive`,
   name: all,
   status: ''
@@ -43,8 +40,8 @@ function isCatSelected(id: string) {
           href={c.link}
           class:list={[
             {
-              'bg-rose-100 dark:bg-rose-900/50': isCatSelected(c.id),
-              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.id)
+              'bg-rose-100 dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
+              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? '')
             },
             'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-rose-800 dark:border-rose-300'
           ]}
@@ -53,6 +50,17 @@ function isCatSelected(id: string) {
     ))}
   </ul>
 </div>
+<p class="mt-3">
+  <span class="text-lg font-medium">
+    {posts.length}
+  </span> posts
+</p>
+
+<!-- <p class="mt-2">
+  <span class="text-lg font-medium">
+    4
+  </span> hidden posts <a>Reveal</a>
+</p> -->
 <div class={`my-3 grid gap-3 flex-wrap grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}>
   {posts.map((p) => (
     <div>
