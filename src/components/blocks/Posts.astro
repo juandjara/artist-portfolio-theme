@@ -1,6 +1,7 @@
 ---
 import { formatImageURL, getCategories, getPosts } from "../../lib/directus"
 import { i18nConfig } from "../../lib/i18n"
+import PostGrid from '../PostGrid'
 
 const categoryId = Astro.params.category ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
@@ -11,6 +12,12 @@ const [_categories, _posts] = await Promise.all([
 ])
 
 const categories = _categories.filter((c) => c.status === 'visible')
+const category = _categories.find((c) => c.permalink === categoryId)
+
+if (category && !categories.includes(category)) {
+  categories.push(category)
+}
+
 const { numProtected, posts } = _posts
 
 const all = ({
@@ -24,7 +31,7 @@ categories.unshift({
   permalink: 'all',
   link: `/${language}/archive`,
   name: all,
-  status: ''
+  status: '',
 })
 
 function isCatSelected(id: string) {
@@ -41,7 +48,8 @@ function isCatSelected(id: string) {
           class:list={[
             {
               'bg-rose-100 dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
-              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? '')
+              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? ''),
+              'opacity-50': c.status === 'protected'
             },
             'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-rose-800 dark:border-rose-300'
           ]}
@@ -50,35 +58,10 @@ function isCatSelected(id: string) {
     ))}
   </ul>
 </div>
-<p class="mt-3">
-  <span class="text-lg font-medium">
-    {posts.length}
-  </span> posts
-</p>
-
-<!-- <p class="mt-2">
-  <span class="text-lg font-medium">
-    4
-  </span> hidden posts <a>Reveal</a>
-</p> -->
-<div class={`my-3 grid gap-3 flex-wrap grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}>
-  {posts.map((p) => (
-    <div>
-      <a
-        href={`/post/${p.slug}`}
-        class="w-full aspect-square group flex justify-center items-center relative overflow-hidden rounded-md transition-shadow shadow-xs hover:shadow-md shadow-rose-900 dark:shadow-rose-200"
-      >
-        <div class="transform-3d transition-transform group-hover:scale-110 duration-300 ease-out absolute z-10 inset-0">
-          <img
-            class="w-full h-full object-cover object-center rounded-md"
-            src={formatImageURL(p.image as string)}
-            alt={p.title}
-          />
-        </div>
-      </a>
-      {p.title ? (
-        <p class="py-1">{p.title}</p>
-      ) : null}
-    </div>
-  ))}
-</div>
+<PostGrid
+  client:load
+  posts={posts}
+  numProtected={numProtected}
+  category={categoryId ?? ''}
+  language={language}
+/>

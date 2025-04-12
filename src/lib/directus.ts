@@ -82,15 +82,15 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
     });
 }
 
-export async function getPosts(categoryId: string | null, language: string) {
+export async function getPosts(categoryLink: string | null, language: string, includeProtected?: boolean) {
   let numProtected = 0
   let rows = [] as Posts[]
 
-  if (categoryId) {
+  if (categoryLink) {
     const categories = await directus.request(readItems('categories', {
       filter: {
         permalink: {
-          _eq: categoryId
+          _eq: categoryLink
         }
       },
       fields: [{
@@ -103,7 +103,7 @@ export async function getPosts(categoryId: string | null, language: string) {
     }))
     const category = categories[0]
     const allPosts = (category?.posts ?? []).map((p) => p.posts_id as Posts)
-    const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
+    const unprotectedPosts = includeProtected ? allPosts :  allPosts.filter((p) => p.protected !== true)
     numProtected = allPosts.length - unprotectedPosts.length
     rows = unprotectedPosts
   } else {
@@ -125,7 +125,7 @@ export async function getPosts(categoryId: string | null, language: string) {
         id: p.id,
         title,
         content,
-        image: p.image,
+        image: formatImageURL(p.image as string) ?? "",
         slug: p.slug,
       }
     })
