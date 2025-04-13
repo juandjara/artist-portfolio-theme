@@ -1,0 +1,56 @@
+---
+import type { GetStaticPathsResult } from "astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { formatImageURL } from "../../../lib/directus";
+import { getTranslations } from "../../../lib/directus";
+import { getAllPosts } from "../../../lib/directus";
+import { i18nConfig } from "../../../lib/i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts()
+  return i18nConfig.locales.map((lang) => {
+    return posts.map((p) => {
+      const translations = getTranslations(p.translations, lang)
+      const title = translations?.title ?? ''
+      const content = translations?.content ?? ''
+      const postProp = {
+        id: p.id,
+        title,
+        content,
+        data: p.published_at,
+        image: formatImageURL(p.image as string) ?? "",
+        slug: p.slug,
+      }
+
+      return {
+        params: { lang, post: p.slug ?? p.id },
+        props: { post: postProp }
+      }
+    }) satisfies GetStaticPathsResult
+  }).flat()
+}
+
+const post = Astro.props.post
+const lang = Astro.params.lang
+
+---
+
+<BaseLayout pageTitle={post.title} showTitle={false}>
+  <div class="max-w-3xl mx-auto mt-12">
+    <a
+      class="inline-block my-2 font-medium text-lg"
+      href={getRelativeLocaleUrl(lang, '/archive', { normalizeLocale: false })}
+    >&#8672; Back</a>
+    <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" />
+    <h2 class="mt-8 mb-2 text-3xl text-link font-medium">{post.title}</h2>
+    <div
+      class="mt-2 mb-6 prose dark:prose-invert
+      prose-h1:font-bold prose-h1:text-xl
+      prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
+      prose-headings:underline"
+    >
+      <Fragment set:html={post.content} />
+    </div>
+  </div>
+</BaseLayout>

@@ -132,6 +132,13 @@ export async function getPosts(categoryLink: string | null, language: string, in
   }
 }
 
+export async function getAllPosts() {
+  const allPosts = await directus.request(readItems('posts', {
+    fields: ["*", { translations: ["*"] }]
+  })) as Posts[]
+  return allPosts
+}
+
 export async function getCategories(language: string) {
   const rows = await directus.request(readItems('categories', {
     fields: ["*", { translations: ["*"] }]

@@ -69,7 +69,7 @@ export default function PostGrid({
         {_posts.map((p) => (
           <div>
             <a
-              href={`/post/${p.slug}`}
+              href={`/${language}/posts/${p.slug}`}
               class="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md shadow-xs shadow-rose-900 transition-shadow hover:shadow-md dark:shadow-rose-200"
             >
               <div class="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
