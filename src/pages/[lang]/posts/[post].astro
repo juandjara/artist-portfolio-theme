@@ -18,7 +18,7 @@ export async function getStaticPaths() {
         id: p.id,
         title,
         content,
-        data: p.published_at,
+        date: new Date(p.published_at ?? '').toLocaleDateString(),
         image: formatImageURL(p.image as string) ?? "",
         slug: p.slug,
       }
@@ -43,7 +43,8 @@ const lang = Astro.params.lang
       href={getRelativeLocaleUrl(lang, '/archive', { normalizeLocale: false })}
     >&#8672; Back</a>
     <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" />
-    <h2 class="mt-8 mb-2 text-3xl text-link font-medium">{post.title}</h2>
+    <time class="mb-2 text-sm inline-block">{post.date}</time>
+    <h2 class="mb-3 text-3xl text-link font-medium">{post.title}</h2>
     <div
       class="mt-2 mb-6 prose dark:prose-invert
       prose-h1:font-bold prose-h1:text-xl
