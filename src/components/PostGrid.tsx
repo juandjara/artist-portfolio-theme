@@ -89,7 +89,7 @@ export default function PostGrid({
               <div className="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
                 <img
                   className="h-full w-full rounded-md object-cover object-center"
-                  src={p.image}
+                  src={`${p.image}?width=300&height=300`}
                   alt={p.title}
                 />
               </div>
