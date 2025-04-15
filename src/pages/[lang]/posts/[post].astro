@@ -39,6 +39,7 @@ const lang = Astro.params.lang
 <BaseLayout pageTitle={post.title} showTitle={false}>
   <div class="max-w-3xl mx-auto mt-12">
     <a
+      id="back-button"
       class="inline-block my-2 font-medium text-lg"
       href={getRelativeLocaleUrl(lang, '/archive', { normalizeLocale: false })}
     >&#8672; Back</a>
@@ -54,4 +55,14 @@ const lang = Astro.params.lang
       <Fragment set:html={post.content} />
     </div>
   </div>
+  <script>
+    const backButton = document.getElementById("back-button")
+    backButton?.addEventListener('click', (ev) => {
+      const cameFromFeed = sessionStorage.getItem('artist_portfolio:from_feed')
+      if (cameFromFeed === 'true') {
+        ev.preventDefault()
+        history.back()
+      }
+    })
+  </script>
 </BaseLayout>

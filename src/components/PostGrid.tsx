@@ -43,6 +43,10 @@ export default function PostGrid({
     }
   }
 
+  function beforeNavigation(ev: MouseEvent) {
+    sessionStorage.setItem("artist_portfolio:from_feed", "true")
+  }
+
   return (
     <>
       <div class="mt-3 flex items-center justify-between">
@@ -69,6 +73,7 @@ export default function PostGrid({
         {_posts.map((p) => (
           <div>
             <a
+              onClick={beforeNavigation}
               href={`/${language}/posts/${p.slug}`}
               class="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md shadow-xs shadow-rose-900 transition-shadow hover:shadow-md dark:shadow-rose-200"
             >
