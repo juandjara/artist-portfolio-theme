@@ -1,7 +1,13 @@
-# Astro "Build a Blog" Project - Completed
+# Artist Portfolio Theme
 
-This is the project you'll build with the [Astro Tutorial](https://docs.astro.build/en/tutorial/0-introduction/). Use this code to compare to your own, or explore to see how the basics of a blog are built in Astro!
+An Astro theme created for artist portfolios lightly based on the basic [Astro blog starter](https://docs.astro.build/en/tutorial/)
 
-This branch contains the state of the project after completing the basic tutorial, [Unit 6.3](https://docs.astro.build/en/tutorial/6-islands/3/).
+It uses [Directus CMS](https://directus.io) as its data source and has a extensive collection of features:
 
-The [`content collections`](https://github.com/withastro/blog-tutorial-demo/tree/content-collections) branch is the completed project branch after the optional Content Collections extension in unit [6.4](https://docs.astro.build/en/tutorial/6-islands/4/).
+- Dark Mode and Light Mode
+- Content Translations handled by the CMS
+- Image uploading and management handled by the CMS
+- Content Categories (both public and protected with password)
+- Dynamic content for all pages
+- Dynamic navigation menu
+- Allmost every bit of text on the site is editable in the CMS
