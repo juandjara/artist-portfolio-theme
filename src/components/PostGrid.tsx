@@ -58,18 +58,18 @@ export default function PostGrid({
 
   return (
     <>
-      <div class="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex items-center justify-between">
         <p>
-          <span class="text-lg font-medium">{posts.length}</span> posts
+          <span className="text-lg font-medium">{posts.length}</span> posts
         </p>
         {_numProtected ? (
           <p>
-            <span class="text-lg font-medium">{_numProtected}</span> hidden
+            <span className="text-lg font-medium">{_numProtected}</span> hidden
             posts{" "}
             <button
               disabled={status === "loading"}
               onClick={revealHiddenPosts}
-              class="text-link cursor-pointer"
+              className="text-link cursor-pointer"
             >
               {status === "loading" ? "Loading..." : "Reveal"}
             </button>
@@ -77,28 +77,27 @@ export default function PostGrid({
         ) : null}
       </div>
       <div
-        class={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}
+        className={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}
       >
         {_posts.map((p) => (
           <div>
             <a
               onClick={beforeNavigation}
               href={`/${language}/posts/${p.slug}`}
-              class="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md shadow-xs shadow-rose-900 transition-shadow hover:shadow-md dark:shadow-rose-200"
+              className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md shadow-xs shadow-rose-900 transition-shadow hover:shadow-md dark:shadow-rose-200"
             >
-              <div class="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
+              <div className="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
                 <img
-                  class="h-full w-full rounded-md object-cover object-center"
+                  className="h-full w-full rounded-md object-cover object-center"
                   src={p.image}
                   alt={p.title}
                 />
               </div>
-              <div class="absolute bottom-0 left-0 z-10 hidden items-center gap-2 rounded-tr-sm bg-white/80 px-2 py-1 opacity-0 shadow-md transition-opacity duration-500 ease-in group-hover:flex group-hover:opacity-100">
-                <span class="sr-only">Categories: </span>
-                <span class="text-sm font-medium">{getCategories(p.id)}</span>
-              </div>
             </a>
-            {p.title ? <p class="py-1">{p.title}</p> : null}
+            <p className="text-link pt-2 text-sm font-medium">
+              {getCategories(p.id)}
+            </p>
+            {p.title ? <p className="pb-1">{p.title}</p> : null}
           </div>
         ))}
       </div>
