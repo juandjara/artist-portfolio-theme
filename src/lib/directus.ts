@@ -8,6 +8,7 @@ import {
   type DirectusFile,
 } from "@directus/sdk";
 import type {
+  CategoriesPosts,
   DBSchema,
   Languages,
   NavigationItems,
@@ -141,11 +142,12 @@ export async function getAllPosts() {
 
 export async function getCategories(language: string) {
   const rows = await directus.request(readItems('categories', {
-    fields: ["*", { translations: ["*"] }]
+    fields: ["*", { translations: ["*"], posts: ['*'] }]
   }))
   return rows.map((category) => {
     const translations = getTranslations(category.translations, language);
     const name = translations?.name;
+    const postIds = category.posts?.map((p) => (p as CategoriesPosts).posts_id as string)
   
     return {
       name,
@@ -153,6 +155,7 @@ export async function getCategories(language: string) {
       status: category.status,
       background: category.background,
       permalink: category.permalink,
+      postIds,
       link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
     };
   });

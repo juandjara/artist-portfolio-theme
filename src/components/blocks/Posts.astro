@@ -12,6 +12,20 @@ const [_categories, _posts] = await Promise.all([
 ])
 
 const categories = _categories.filter((c) => c.status === 'visible')
+
+const _postCategoryMap = {} as Record<string, Set<string>>
+for (const cat of categories) {
+  for (const id of (cat.postIds ?? [])) {
+    _postCategoryMap[id] = _postCategoryMap[id] || new Set()
+    if (cat.name) {
+      _postCategoryMap[id].add(cat.name)
+    }
+  }
+}
+const postCategoryMap = Object.fromEntries(
+  Object.entries(_postCategoryMap).map(([key, value]) => [key, Array.from(value)])
+)
+
 const category = _categories.find((c) => c.permalink === categoryId)
 
 if (category && !categories.includes(category)) {
@@ -32,6 +46,7 @@ categories.unshift({
   link: `/${language}/archive`,
   name: all,
   status: '',
+  postIds: []
 })
 
 function isCatSelected(id: string) {
@@ -64,4 +79,5 @@ function isCatSelected(id: string) {
   numProtected={numProtected}
   category={categoryId ?? ''}
   language={language}
+  postCategoryMap={postCategoryMap}
 />

@@ -9,10 +9,19 @@ export default function PostGrid({
   numProtected,
   category,
   language,
-}: PostProps & { category: string; language: string }) {
+  postCategoryMap,
+}: PostProps & {
+  category: string
+  language: string
+  postCategoryMap: Record<string, string[]>
+}) {
   const [_numProtected, setNumProtected] = useState(numProtected)
   const [_posts, setPosts] = useState(posts)
   const [status, setStatus] = useState("hidden")
+
+  function getCategories(id: string) {
+    return postCategoryMap[id].join(", ")
+  }
 
   async function revealHiddenPosts() {
     const password = window.prompt("Enter password")
@@ -83,6 +92,10 @@ export default function PostGrid({
                   src={p.image}
                   alt={p.title}
                 />
+              </div>
+              <div class="absolute bottom-0 left-0 z-10 hidden items-center gap-2 rounded-tr-sm bg-white/80 px-2 py-1 opacity-0 shadow-md transition-opacity duration-500 ease-in group-hover:flex group-hover:opacity-100">
+                <span class="sr-only">Categories: </span>
+                <span class="text-sm font-medium">{getCategories(p.id)}</span>
               </div>
             </a>
             {p.title ? <p class="py-1">{p.title}</p> : null}
