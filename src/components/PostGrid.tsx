@@ -97,6 +97,8 @@ export default function PostGrid({
                   className="h-full w-full rounded-md object-cover object-center"
                   src={`${p.image}?width=300&height=300`}
                   alt={p.title}
+                  decoding="async"
+                  loading="lazy"
                 />
               </div>
             </a>
