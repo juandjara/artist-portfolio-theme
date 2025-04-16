@@ -1,8 +1,8 @@
 import type { AstroUserConfig } from "astro";
 
 export const i18nConfig = {
-  locales: ["es-ES", "en-US"],
-  defaultLocale: "es-ES",
+  locales: ["es", "en", "ja"],
+  defaultLocale: "es",
   routing: {
     prefixDefaultLocale: true,
     redirectToDefaultLocale: true,

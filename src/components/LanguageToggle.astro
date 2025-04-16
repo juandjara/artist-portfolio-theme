@@ -4,13 +4,19 @@ import { i18nConfig } from "../lib/i18n";
 const lang = Astro.currentLocale ?? i18nConfig.defaultLocale;
 const url = Astro.url.toString();
 
-const esURL = url.replace(lang, 'es-ES')
-const enURL = url.replace(lang, 'en-US')
+const items = i18nConfig.locales.map((l) => ({
+  key: l,
+  selected: lang === l,
+  url: url.replace(lang, l)
+}))
 
 ---
 
 <div class="mx-3">
-  <a href={esURL} class:list={[{ "font-bold": lang === "es-ES" }]}> ES </a>
-  <span> | </span>
-  <a href={enURL} class:list={[{ "font-bold": lang === "en-US" }]}> EN </a>
+  {items.map((item, index) => (
+    <Fragment>
+      {index > 0 && (<span> | </span>)}
+      <a href={item.url} class:list={['uppercase', { "font-bold": item.selected }]}> {item.key} </a>
+    </Fragment>
+  ))}
 </div>
