@@ -7,7 +7,7 @@ const url = Astro.url.toString();
 const items = i18nConfig.locales.map((l) => ({
   key: l,
   selected: lang === l,
-  url: url.replace(lang, l)
+  url: url.replace(`/${lang}/`, `/${l}/`)
 }))
 
 ---
