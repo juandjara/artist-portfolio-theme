@@ -1,16 +1,13 @@
 import {
-  authentication,
   createDirectus,
-  readItem,
   readItems,
+  readTranslations,
   rest,
   staticToken,
-  type DirectusFile,
 } from "@directus/sdk";
 import type {
   CategoriesPosts,
   DBSchema,
-  Languages,
   NavigationItems,
   Pages,
   Posts,
@@ -24,14 +21,25 @@ const directus = createDirectus<DBSchema>(import.meta.env.DIRECTUS_URL)
 
 export default directus;
 
+const translationMap = {
+  'es': 'es-ES',
+  'en': 'en-US',
+  'ja': 'ja-JP',
+}
+
+function mapTranslation(langKey: string) {
+  return translationMap[langKey as keyof typeof translationMap] || langKey;
+}
+
 // anything on T can be "undefined" if not requested by the client "fields"
 // anything on T can be "null" if is nullable in the DB
 export function getTranslations<T extends TranslationsCommon>(
   items: (Partial<T> | string)[] | null,
-  lang: string,
+  langKey: string,
 ) {
-  let arr = items ?? [];
-  let okItems = arr.filter((a) => a && typeof a !== "string") as Partial<T>[];
+  const lang = mapTranslation(langKey)
+  const arr = items ?? [];
+  const okItems = arr.filter((a) => a && typeof a !== "string") as Partial<T>[];
   return okItems.find((item) => item.languages_code === lang);
 }
 
@@ -94,7 +102,7 @@ export async function getPosts(categoryLink: string | null, language: string, in
           _eq: categoryLink
         }
       },
-      fields: [{
+      fields: ['password', {
         posts: ['*', {
           posts_id: ['*', {
             translations: ['*']
@@ -105,7 +113,7 @@ export async function getPosts(categoryLink: string | null, language: string, in
     const category = categories[0]
     const allPosts = (category?.posts ?? []).map((p) => p.posts_id as Posts)
     const unprotectedPosts = includeProtected ? allPosts :  allPosts.filter((p) => p.protected !== true)
-    numProtected = allPosts.length - unprotectedPosts.length
+    numProtected = category.password ? allPosts.length - unprotectedPosts.length : 0
     rows = unprotectedPosts
   } else {
     const allPosts = await directus.request(readItems('posts', {
@@ -201,4 +209,10 @@ export async function getPage(link: string) {
     }),
   );
   return pages[0]
+}
+
+export async function translateString(key: string, langKey: string) {
+  const data = await directus.request(readTranslations({ filter: { key: {  _eq: key } } }))
+  const item = data.find((d) => d.language === mapTranslation(langKey))
+  return item?.value ?? key
 }
