@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { formatImageURL, getTranslations } from "../../lib/directus";
+import { formatImageURL, getTranslations, translateString } from "../../lib/directus";
 import type {
   BlockCategories,
   BlockCategoriesCategories,
@@ -26,6 +26,9 @@ const categories = block.categories.map((c) => {
     link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
   };
 });
+
+const seeAll = await translateString('see-all', language)
+
 ---
 
 <ul class="md:flex justify-around gap-3 mb-3 mt-12">
@@ -53,4 +56,4 @@ const categories = block.categories.map((c) => {
 <a
   href={getRelativeLocaleUrl(language, `/archive`, { normalizeLocale: false })}
   class="text-center block w-full text-lg font-semibold mt-4"
->Ver todo</a>
+>{seeAll}</a>

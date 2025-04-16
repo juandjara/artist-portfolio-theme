@@ -10,10 +10,16 @@ export default function PostGrid({
   category,
   language,
   postCategoryMap,
+  labels,
 }: PostProps & {
   category: string
   language: string
   postCategoryMap: Record<string, string[]>
+  labels: {
+    loading: string
+    reveal: string
+    hidden: string
+  }
 }) {
   const [_numProtected, setNumProtected] = useState(numProtected)
   const [_posts, setPosts] = useState(posts)
@@ -64,14 +70,14 @@ export default function PostGrid({
         </p>
         {_numProtected ? (
           <p>
-            <span className="text-lg font-medium">{_numProtected}</span> hidden
-            posts{" "}
+            <span className="text-lg font-medium">{_numProtected}</span>{" "}
+            {labels.hidden}{" "}
             <button
               disabled={status === "loading"}
               onClick={revealHiddenPosts}
               className="text-link cursor-pointer"
             >
-              {status === "loading" ? "Loading..." : "Reveal"}
+              {status === "loading" ? labels.loading : labels.reveal}
             </button>
           </p>
         ) : null}

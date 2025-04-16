@@ -1,5 +1,5 @@
 ---
-import { formatImageURL, getCategories, getPosts } from "../../lib/directus"
+import { getCategories, getPosts, translateString } from "../../lib/directus"
 import { i18nConfig } from "../../lib/i18n"
 import PostGrid from '../PostGrid'
 
@@ -34,10 +34,7 @@ if (category && !categories.includes(category)) {
 
 const { numProtected, posts } = _posts
 
-const all = ({
-  'es-ES': 'Todos',
-  'en-US': 'All'
-})[language]
+const all = await translateString('all', language)
 
 categories.unshift({
   background: '',
@@ -51,6 +48,18 @@ categories.unshift({
 
 function isCatSelected(id: string) {
   return id === (categoryId ?? 'all')
+}
+
+const _labels = await Promise.all([
+  translateString('loading', language),
+  translateString('reveal', language),
+  translateString('hidden-posts', language)
+])
+
+const labels = {
+  loading: _labels[0],
+  reveal: _labels[1],
+  hidden: _labels[2],
 }
 
 ---
@@ -75,6 +84,7 @@ function isCatSelected(id: string) {
 </div>
 <PostGrid
   client:load
+  labels={labels}
   posts={posts}
   numProtected={numProtected}
   category={categoryId ?? ''}
