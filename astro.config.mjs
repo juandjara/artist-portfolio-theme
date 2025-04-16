@@ -21,8 +21,8 @@ export default defineConfig({
   },
 
   i18n: i18nConfig,
-  output: 'server',
+  // output: 'server',
   adapter: netlify({
-    edgeMiddleware: true
+    // edgeMiddleware: true
   }),
 });
