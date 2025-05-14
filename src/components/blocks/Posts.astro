@@ -3,7 +3,8 @@ import { getCategories, getPosts, translateString } from "../../lib/directus"
 import { i18nConfig } from "../../lib/i18n"
 import PostGrid from '../PostGrid'
 
-const categoryId = Astro.params.category ?? null
+const localCategory = Astro.locals.previewCategory ?? null
+const categoryId = localCategory ?? Astro.params.category ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 
 const [_categories, _posts] = await Promise.all([
@@ -63,7 +64,7 @@ const labels = {
 }
 
 ---
-<div class="-mx-2 pb-4 border-b border-rose-800">
+<div class="-mx-2 mt-4 pb-4 border-b border-rose-800">
   <ul class="mx-2 flex flex-wrap justify-center gap-3">
     {categories.map((c) => (
       <li>

@@ -67,19 +67,18 @@ body {
 }
 
 /* nav styles */
-.hamburger {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-}
 
-.hamburger .line {
+.menu-button-line {
   display: block;
-  width: 40px;
-  height: 5px;
-  margin-bottom: 10px;
+  width: 32px;
+  height: 4px;
   background-color: var(--panel-light);
 }
+.menu-button-line:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+
 .dark .hamburger .line {
   background-color: var(--panel-dark);
 }

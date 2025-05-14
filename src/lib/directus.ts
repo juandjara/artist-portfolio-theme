@@ -148,6 +148,14 @@ export async function getAllPosts() {
   return allPosts
 }
 
+export async function getPost(slug: string) {
+  const post = await directus.request(readItems('posts', {
+    filter: { slug: { _eq: slug } },
+    fields: ["*", { translations: ["*"] }]
+  }))
+  return post[0]
+}
+
 export async function getCategories(language: string) {
   const rows = await directus.request(readItems('categories', {
     fields: ["*", { translations: ["*"], posts: ['*'] }]

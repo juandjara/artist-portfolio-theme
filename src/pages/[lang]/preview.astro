@@ -1,0 +1,72 @@
+---
+import Blocks from "../../components/Blocks.astro";
+import PostDetail from "../../components/PostDetail.astro";
+import type { PostDetail as PostDetailType } from "../../components/PostDetail.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPage, getTranslations, getPost, formatImageURL } from "../../lib/directus";
+import type { PageBlocks, Posts } from "../../lib/directus.types";
+import { i18nConfig } from "../../lib/i18n";
+
+export const prerender = false;
+
+const token = import.meta.env.DIRECTUS_TOKEN;
+const params = Astro.url.searchParams;
+const previewToken = params.get("token")?.trim();
+const slug = params.get("slug")?.trim();
+const type = params.get("type")?.trim();
+const lang = params.get("lang")?.trim() ?? i18nConfig.defaultLocale;
+
+if (previewToken !== token) {
+  console.error(`Invalid preview token in URL: ${previewToken}`);
+  throw new Error("Invalid preview token in URL");
+}
+
+let title = ''
+let blocks = [] as PageBlocks[]
+let showTitle = 'yes'
+
+async function fetchPage(slug: string) {
+  const page = await getPage(slug!)
+  const translations = getTranslations(page.translations, lang)
+  if (slug !== '/') {
+    title = translations?.title ?? ''
+  }
+  showTitle = page.show_title ?? 'yes'
+  blocks = page.blocks.filter((b) => b && typeof b !== 'string') as PageBlocks[]
+}
+
+let postDetail = null as PostDetailType | null
+
+if (type === 'page') {
+  await fetchPage(slug!)
+}
+if (type === 'category') {
+  Astro.locals.previewCategory = slug
+  await fetchPage('/')
+}
+if (type === 'post') {
+  const post = await getPost(slug!) as Posts
+  const translations = getTranslations(post.translations, lang)
+  const title = translations?.title ?? ''
+  const content = translations?.content ?? ''
+  postDetail = {
+    id: post.id,
+    title,
+    content,
+    date: new Date(post.published_at ?? '').toLocaleDateString(),
+    image: formatImageURL(post.image as string) ?? "",
+    slug: post.slug!,
+  }
+}
+---
+
+<BaseLayout showTitle={showTitle === 'yes'} pageTitle={title}>
+  <div class="fixed top-0 right-0">
+    <p class="text-white font-bold px-2 py-1 bg-white text-sm">Preview</p>
+  </div>
+  {type === 'post' ? (
+    (postDetail ? <PostDetail post={postDetail} /> : <p>Post not found</p>)
+  ) : (
+    <Blocks blocks={blocks} />
+  )}
+</BaseLayout>

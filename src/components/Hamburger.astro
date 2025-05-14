@@ -2,13 +2,15 @@
 
 ---
 
-<button aria-label="toggle menu" class="hamburger flex-grow md:hidden">
-  <span class="line"></span>
-  <span class="line"></span>
-  <span class="line"></span>
-</button>
-<script is:inline>
-  document.querySelector(".hamburger").addEventListener("click", () => {
-    document.querySelector(".nav-links").classList.toggle("hidden");
-  });
-</script>
+<div class="menu-button-container">
+  <button aria-label="toggle menu" id="menu-button" class="block md:hidden">
+    <span class="menu-button-line"></span>
+    <span class="menu-button-line"></span>
+    <span class="menu-button-line"></span>
+  </button>
+  <script is:inline>
+    document.querySelector("#menu-button").addEventListener("click", () => {
+      document.querySelector("#nav-links").classList.toggle("hidden");
+    });
+  </script>
+</div>

@@ -28,19 +28,10 @@ const homeLink = getRelativeLocaleUrl(language, '/', { normalizeLocale: false })
 
 <header>
   <nav class="flex flex-wrap justify-end items-center">
-    <a href={homeLink} class="flex items-center md:items-end gap-2">
-      <img
-        class="w-20 h-20 rounded-full border-2 border-gray-300"
-        src={favicon}
-        alt="drawing of my face"
-      />
-      <div>
-        <h1 class="text-4xl font-medium">{title}</h1>
-        <p class="text-lg">{description}</p>
-      </div>
-    </a>
-    <Hamburger />
-    <ul class="nav-links py-3 hidden md:flex items-center gap-1 flex-grow justify-end">
+    <ul
+      id="nav-links"
+      class="md:order-0 order-10 md:w-auto w-full py-3 hidden md:flex items-center gap-1 flex-grow justify-end"
+    >
       {
         items.map(({ url, title, selected }) => (
           <li>
@@ -48,7 +39,7 @@ const homeLink = getRelativeLocaleUrl(language, '/', { normalizeLocale: false })
               href={url}
               class:list={[
                 { 'underline': selected },
-                'uppercase block text-xl px-3.5 py-1.5 font-semibold rounded-lg'
+                'uppercase block text-xl md:px-3 py-1.5 font-semibold rounded-lg'
               ]}
             >
               {title}
@@ -57,7 +48,20 @@ const homeLink = getRelativeLocaleUrl(language, '/', { normalizeLocale: false })
         ))
       }
     </ul>
+    <Hamburger />
+    <div class="md:hidden flex-grow" />
     <LanguageToggle />
     <ThemeToggle />
   </nav>
+  <div class="flex justify-center items-center md:items-end gap-3 pt-8 pb-4">
+    <img
+      class="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-gray-300"
+      src={favicon}
+      alt="drawing of my face"
+    />
+    <div>
+      <h1 class="text-link text-4xl md:text-6xl font-medium mb-1">{title}</h1>
+      <p class="text-lg md:text-2xl">{description}</p>
+    </div>
+  </div>
 </header>

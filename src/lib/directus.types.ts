@@ -661,6 +661,7 @@ export type Pages = {
   sort?: number | null;
   status: string;
   translations: UUID[] | PagesTranslations[];
+  show_title?: "yes" | "no" | null;
 };
 
 export type PagesTranslations = {

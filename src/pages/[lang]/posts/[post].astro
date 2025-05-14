@@ -5,7 +5,7 @@ import { formatImageURL } from "../../../lib/directus";
 import { getTranslations } from "../../../lib/directus";
 import { getAllPosts } from "../../../lib/directus";
 import { i18nConfig } from "../../../lib/i18n";
-import { getRelativeLocaleUrl } from "astro:i18n";
+import PostDetail from "../../../components/PostDetail.astro";
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
         content,
         date: new Date(p.published_at ?? '').toLocaleDateString(),
         image: formatImageURL(p.image as string) ?? "",
-        slug: p.slug,
+        slug: p.slug!,
       }
 
       return {
@@ -32,37 +32,9 @@ export async function getStaticPaths() {
 }
 
 const post = Astro.props.post
-const lang = Astro.params.lang
 
 ---
 
 <BaseLayout pageTitle={post.title} showTitle={false}>
-  <div class="max-w-3xl mx-auto mt-12">
-    <a
-      id="back-button"
-      class="inline-block my-2 font-medium text-lg"
-      href={getRelativeLocaleUrl(lang, '/archive', { normalizeLocale: false })}
-    >&#8672; Back</a>
-    <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" />
-    <time class="mb-2 text-sm inline-block">{post.date}</time>
-    <h2 class="mb-3 text-3xl text-link font-medium">{post.title}</h2>
-    <div
-      class="mt-2 mb-6 prose dark:prose-invert
-      prose-h1:font-bold prose-h1:text-xl
-      prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
-      prose-headings:underline"
-    >
-      <Fragment set:html={post.content} />
-    </div>
-  </div>
-  <script>
-    const backButton = document.getElementById("back-button")
-    backButton?.addEventListener('click', (ev) => {
-      const cameFromFeed = sessionStorage.getItem('artist_portfolio:from_feed')
-      if (cameFromFeed === 'true') {
-        ev.preventDefault()
-        history.back()
-      }
-    })
-  </script>
+  <PostDetail post={post} />
 </BaseLayout>

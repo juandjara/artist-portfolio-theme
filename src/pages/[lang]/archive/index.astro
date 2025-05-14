@@ -9,14 +9,15 @@ export function getStaticPaths() {
   return i18nConfig.locales.map((lang) => ({ params: { lang } }));
 }
 
-const page = await getPage('/archive')
+const page = await getPage('/')
 const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
 const translation = getTranslations(page?.translations, language);
 const title = translation?.title ?? "";
 const blocks = page?.blocks as PageBlocks[];
+const showTitle = page?.show_title ?? "yes";
 
 ---
 
-<BaseLayout pageTitle={title}>
+<BaseLayout showTitle={showTitle === "yes"} pageTitle={title}>
   <Blocks blocks={blocks} />
 </BaseLayout>
