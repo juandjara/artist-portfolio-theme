@@ -169,6 +169,31 @@ export async function getCategories(language: string) {
   });
 }
 
+export function getPageBlockQuery() {
+  return [
+    "*",
+    {
+      item: {
+        block_posts: ["*"],
+        block_categories: [
+          "*",
+          {
+            categories: [
+              "*",
+              { categories_id: ["*", { translations: ["*"] }] },
+            ],
+          },
+        ],
+        block_form: ["*"],
+        block_gallery: ["*"],
+        block_heading: ["*", { translations: ["*"] }],
+        block_hero: ["*", { translations: ["*"] }],
+        block_richtext: ["*", { translations: ["*"] }],
+      },
+    },
+  ] as const
+}
+
 export async function getPage(link: string) {
   const pages = await directus.request(
     readItems("pages", {
@@ -181,28 +206,7 @@ export async function getPage(link: string) {
         "*",
         { translations: ["*"] },
         {
-          blocks: [
-            "*",
-            {
-              item: {
-                block_posts: ["*"],
-                block_categories: [
-                  "*",
-                  {
-                    categories: [
-                      "*",
-                      { categories_id: ["*", { translations: ["*"] }] },
-                    ],
-                  },
-                ],
-                block_form: ["*"],
-                block_gallery: ["*"],
-                block_heading: ["*", { translations: ["*"] }],
-                block_hero: ["*", { translations: ["*"] }],
-                block_richtext: ["*", { translations: ["*"] }],
-              },
-            },
-          ],
+          blocks: getPageBlockQuery()
         },
       ],
       limit: 1,

@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPathsOptions, GetStaticPathsResult } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import directus, { getTranslations } from "../../lib/directus";
+import directus, { getTranslations, getPageBlockQuery } from "../../lib/directus";
 import { readItems } from "@directus/sdk";
 import type { PageBlocks } from "../../lib/directus.types";
 import Blocks from "../../components/Blocks.astro";
@@ -18,22 +18,7 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
       fields: [
         "*",
         { translations: ["*"] },
-        {
-          blocks: [
-            "*",
-            {
-              item: {
-                block_posts: ["*"],
-                block_categories: ["*", { categories: ["*"] }],
-                block_form: ["*"],
-                block_gallery: ["*"],
-                block_heading: ["*", { translations: ["*"] }],
-                block_hero: ["*", { translations: ["*"] }],
-                block_richtext: ["*", { translations: ["*"] }],
-              },
-            },
-          ],
-        },
+        { blocks: getPageBlockQuery() },
       ],
     }),
   );
@@ -50,9 +35,10 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
         .map((p) => {
           const translations = getTranslations(p.translations, lang);
           const title = translations?.title ?? "";
+          const slug = p.permalink!.replace(/^\//, '');
 
           return {
-            params: { lang, slug: p.permalink! },
+            params: { lang, slug },
             props: { title, blocks: p.blocks },
           };
         }) satisfies GetStaticPathsResult;
@@ -64,6 +50,7 @@ const title = Astro.props.title;
 const blocks = Astro.props.blocks.filter(
   (b) => b && typeof b !== "string",
 ) as PageBlocks[];
+
 ---
 
 <BaseLayout pageTitle={title}>
