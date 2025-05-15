@@ -1,6 +1,8 @@
 ---
 import { getCategories, getPosts, translateString } from "../../lib/directus"
+import type { PageBlocks } from "../../lib/directus.types"
 import { i18nConfig } from "../../lib/i18n"
+import Blocks from "../Blocks.astro"
 import PostGrid from '../PostGrid'
 
 const localCategory = Astro.locals.previewCategory ?? null
@@ -28,6 +30,9 @@ const postCategoryMap = Object.fromEntries(
 )
 
 const category = _categories.find((c) => c.permalink === categoryId)
+const blocks = category?.blocks.filter(
+  (b) => b && typeof b !== "string",
+) as PageBlocks[] ?? []
 
 if (category && !categories.includes(category)) {
   categories.push(category)
@@ -44,7 +49,8 @@ categories.unshift({
   link: `/${language}/archive`,
   name: all,
   status: '',
-  postIds: []
+  postIds: [],
+  blocks: []
 })
 
 function isCatSelected(id: string) {
@@ -83,6 +89,7 @@ const labels = {
     ))}
   </ul>
 </div>
+<Blocks blocks={blocks} />
 <PostGrid
   client:load
   labels={labels}

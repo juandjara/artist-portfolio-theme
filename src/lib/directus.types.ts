@@ -94,6 +94,11 @@ export type BlockRichtextTranslations = {
   languages_code?: string | Languages | null;
 };
 
+export type BlockEmbed = {
+  id: string;
+  embed_code?: string | null;
+};
+
 export type Category = {
   id: string;
   background?: string | DirectusFiles | null;
@@ -103,7 +108,17 @@ export type Category = {
   sort?: number | null;
   status: string;
   translations: UUID[] | CategoriesTranslations[];
+  blocks: UUID[] | CategoriesBlocks[];
 };
+
+export type CategoriesBlocks = {
+  id: string;
+  item?: string | CategoryBlockItem | null;
+  collection?: string | null;
+  categories_id?: string | Category | null;
+};
+
+export type CategoryBlockItem = BlockRichtext | BlockGallery | BlockEmbed
 
 export type CategoriesFiles = {
   categories_id?: string | null;
@@ -701,6 +716,7 @@ export type DBSchema = {
   categories_files: CategoriesFiles[];
   categories_posts: CategoriesPosts[];
   categories_translations: CategoriesTranslations[];
+  categories_blocks: CategoriesBlocks[];
   form_fields: FormFields[];
   form_submission_values: FormSubmissionValues[];
   form_submissions: FormSubmissions[];
@@ -731,7 +747,7 @@ export type DBSchema = {
   block_posts: BlockPosts[];
   block_richtext: BlockRichtext[];
   block_richtext_translations: BlockRichtextTranslations[];
-
+  block_embed: BlockEmbed[];
   /** System collections */
   directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];

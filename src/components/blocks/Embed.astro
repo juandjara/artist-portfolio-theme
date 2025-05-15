@@ -1,0 +1,11 @@
+---
+import type { BlockEmbed } from '../../lib/directus.types'
+
+interface Props {
+  block: BlockEmbed
+}
+
+const block = Astro.props.block
+
+---
+<Fragment set:html={block.embed_code} />

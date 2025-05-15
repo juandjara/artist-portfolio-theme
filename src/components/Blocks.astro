@@ -1,6 +1,7 @@
 ---
 import type { PageBlockItem, PageBlocks } from "../lib/directus.types";
 import Categories from "./blocks/Categories.astro";
+import Embed from "./blocks/Embed.astro";
 import Heading from "./blocks/Heading.astro";
 import Posts from "./blocks/Posts.astro";
 import RichText from "./blocks/RichText.astro";
@@ -22,6 +23,7 @@ const blocks = (Astro.props.blocks ?? [])
         block_heading: Heading,
         block_categories: Categories,
         block_posts: Posts,
+        block_embed: Embed,
       };
       const Component = (componentMap[
         b.collection as keyof typeof componentMap

@@ -158,7 +158,21 @@ export async function getPost(slug: string) {
 
 export async function getCategories(language: string) {
   const rows = await directus.request(readItems('categories', {
-    fields: ["*", { translations: ["*"], posts: ['*'] }]
+    fields: [
+      "*",
+      {
+        translations: ["*"],
+        posts: ['*'],
+        blocks: ['*', {
+          item: {
+            block_embed: ['*'],
+            block_gallery: ['*'],
+            block_richtext: ['*', {
+              translations: ['*']
+            }]
+          }
+        }]
+      }]
   }))
   return rows.map((category) => {
     const translations = getTranslations(category.translations, language);
@@ -172,6 +186,7 @@ export async function getCategories(language: string) {
       background: category.background,
       permalink: category.permalink,
       postIds,
+      blocks: category.blocks,
       link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
     };
   });
