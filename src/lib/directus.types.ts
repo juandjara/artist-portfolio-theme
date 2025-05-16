@@ -705,6 +705,7 @@ export type Posts = {
 
 export type PostsTranslations = {
   content?: string | null;
+  description?: string | null;
   id: number;
   languages_code?: string | Languages | null;
   posts_id?: string | Posts | null;

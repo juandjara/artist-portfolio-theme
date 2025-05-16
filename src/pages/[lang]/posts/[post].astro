@@ -14,10 +14,12 @@ export async function getStaticPaths() {
       const translations = getTranslations(p.translations, lang)
       const title = translations?.title ?? ''
       const content = translations?.content ?? ''
+      const description = translations?.description ?? ''
       const postProp = {
         id: p.id,
         title,
         content,
+        description,
         date: new Date(p.published_at ?? '').toLocaleDateString(),
         image: formatImageURL(p.image as string) ?? "",
         slug: p.slug!,

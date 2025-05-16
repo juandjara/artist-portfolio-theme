@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # temporary script tools
 scripts/
+
+# backup
+backup/

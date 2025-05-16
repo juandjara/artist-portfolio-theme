@@ -49,10 +49,12 @@ if (type === 'post') {
   const translations = getTranslations(post.translations, lang)
   const title = translations?.title ?? ''
   const content = translations?.content ?? ''
+  const description = translations?.description ?? ''
   postDetail = {
     id: post.id,
     title,
     content,
+    description,
     date: new Date(post.published_at ?? '').toLocaleDateString(),
     image: formatImageURL(post.image as string) ?? "",
     slug: post.slug!,

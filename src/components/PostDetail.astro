@@ -5,6 +5,7 @@ export type PostDetail = {
   id: string
   title: string
   content: string
+  description: string
   date: string
   image: string
   slug: string
@@ -25,16 +26,30 @@ const lang = Astro.params.lang!
     class="inline-block my-2 font-medium text-lg"
     href={getRelativeLocaleUrl(lang, '/archive', { normalizeLocale: false })}
   >&#8672; Back</a>
-  <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" />
-  <time class="mb-2 text-sm inline-block">{post.date}</time>
-  <h2 class="mb-3 text-3xl text-link font-medium">{post.title}</h2>
-  <div
-    class="mt-2 mb-6 prose dark:prose-invert
-    prose-h1:font-bold prose-h1:text-xl
-    prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
-    prose-headings:underline"
-  >
-    <Fragment set:html={post.content} />
+  <!-- <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" /> -->
+  <div class="flex gap-4">
+    <div
+      class="mt-2 mb-6 prose dark:prose-invert
+      prose-h1:font-bold prose-h1:text-xl
+      prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
+      prose-headings:underline"
+    >
+      <Fragment set:html={post.content} />
+    </div>
+    <aside>
+      <time class="mb-2 text-sm inline-block">{post.date}</time>
+      <h2 class="mb-3 text-3xl text-link font-medium">{post.title}</h2>
+      {post.description ? (
+        <div
+          class="mt-2 mb-6 prose dark:prose-invert
+          prose-h1:font-bold prose-h1:text-xl
+          prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
+          prose-headings:underline"
+        >
+          <Fragment set:html={post.description} />
+        </div>
+      ) : null}
+    </aside>
   </div>
 </div>
 <script>

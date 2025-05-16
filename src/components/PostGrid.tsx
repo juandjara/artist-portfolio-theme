@@ -26,6 +26,9 @@ export default function PostGrid({
   const [status, setStatus] = useState("hidden")
 
   function getCategories(id: string) {
+    if (!postCategoryMap[id]) {
+      return ""
+    }
     return postCategoryMap[id].join(", ")
   }
 
