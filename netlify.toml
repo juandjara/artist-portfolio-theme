@@ -7,3 +7,8 @@
   to = "/en"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/tarjeta"
+  to = "/"
+  
