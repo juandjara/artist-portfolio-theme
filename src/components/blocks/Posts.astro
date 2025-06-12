@@ -6,13 +6,15 @@ import Blocks from "../Blocks.astro"
 import PostGrid from '../PostGrid'
 
 const localCategory = Astro.locals.previewCategory ?? null
-const categoryId = localCategory ?? Astro.params.category ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+let categoryId = localCategory ?? Astro.params.category ?? null
 
-const [_categories, _posts] = await Promise.all([
-  getCategories(language),
-  getPosts(categoryId, language)
-])
+const _categories = await getCategories(language)
+if (!categoryId) {
+  categoryId = _categories[0]?.permalink ?? null
+}
+
+const _posts = await getPosts(categoryId, language)
 
 const categories = _categories.filter((c) => c.status === 'visible')
 
@@ -39,19 +41,6 @@ if (category && !categories.includes(category)) {
 }
 
 const { numProtected, posts } = _posts
-
-const all = await translateString('all', language)
-
-categories.unshift({
-  background: '',
-  id: 'all',
-  permalink: 'all',
-  link: `/${language}/archive`,
-  name: all,
-  status: '',
-  postIds: [],
-  blocks: []
-})
 
 function isCatSelected(id: string) {
   return id === (categoryId ?? 'all')
