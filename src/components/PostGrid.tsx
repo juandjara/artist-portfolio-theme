@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks"
+import { useMemo, useState } from "preact/hooks"
 import type { getPosts } from "../lib/directus"
 import { actions } from "astro:actions"
 
@@ -24,6 +24,13 @@ export default function PostGrid({
   const [_numProtected, setNumProtected] = useState(numProtected)
   const [_posts, setPosts] = useState(posts)
   const [status, setStatus] = useState("hidden")
+
+  const differentCategories = useMemo(() => {
+    const categories = _posts.map((p) => getCategories(p.id))
+    const uniqueValues = [...new Set(categories)]
+    console.log(uniqueValues)
+    return uniqueValues.length > 1
+  }, [posts, category])
 
   function getCategories(id: string) {
     if (!postCategoryMap[id]) {
@@ -68,25 +75,27 @@ export default function PostGrid({
   return (
     <>
       <div className="mt-3 flex items-center justify-between">
-        {/* <p>
-          <span className="text-lg font-medium">{posts.length}</span> posts
-        </p> */}
         {_numProtected ? (
-          <p>
-            <span className="text-lg font-medium">{_numProtected}</span>{" "}
-            {labels.hidden}{" "}
-            <button
-              disabled={status === "loading"}
-              onClick={revealHiddenPosts}
-              className="text-link cursor-pointer"
-            >
-              {status === "loading" ? labels.loading : labels.reveal}
-            </button>
-          </p>
+          <>
+            <p>
+              <span className="text-lg font-medium">{posts.length}</span> posts
+            </p>
+            <p>
+              <span className="text-lg font-medium">{_numProtected}</span>{" "}
+              {labels.hidden}{" "}
+              <button
+                disabled={status === "loading"}
+                onClick={revealHiddenPosts}
+                className="text-link cursor-pointer"
+              >
+                {status === "loading" ? labels.loading : labels.reveal}
+              </button>
+            </p>
+          </>
         ) : null}
       </div>
       <div
-        className={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5`}
+        className={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4`}
       >
         {_posts.map((p) => (
           <div>
@@ -109,10 +118,12 @@ export default function PostGrid({
                 />
               </div>
             </a>
-            <p className="text-link pt-2 text-sm font-medium">
-              {getCategories(p.id)}
-            </p>
-            {p.title ? <p className="pb-1">{p.title}</p> : null}
+            {differentCategories ? (
+              <p className="text-link pt-2 text-sm font-medium">
+                {getCategories(p.id)}
+              </p>
+            ) : null}
+            {p.title ? <p className="pt-1 pb-1">{p.title}</p> : null}
           </div>
         ))}
       </div>

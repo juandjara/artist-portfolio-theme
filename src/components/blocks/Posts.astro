@@ -36,6 +36,17 @@ const blocks = category?.blocks.filter(
   (b) => b && typeof b !== "string",
 ) as PageBlocks[] ?? []
 
+categories.push({
+  background: '',
+  id: 'all',
+  name: 'About me',
+  status: 'visible',
+  permalink: '',
+  postIds: [],
+  blocks: [],
+  link: `/${language}/about`,
+})
+
 if (category && !categories.includes(category)) {
   categories.push(category)
 }
@@ -57,17 +68,6 @@ const labels = {
   reveal: _labels[1],
   hidden: _labels[2],
 }
-
-categories.push({
-  background: '',
-  id: 'all',
-  name: 'About me',
-  status: 'visible',
-  permalink: '',
-  postIds: [],
-  blocks: [],
-  link: `/${language}/about`,
-})
 
 ---
 <div class="-mx-2 mt-4 pb-4 border-rose-800">
