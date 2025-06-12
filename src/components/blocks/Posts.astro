@@ -70,7 +70,7 @@ categories.push({
 })
 
 ---
-<div class="-mx-2 mt-4 pb-4 border-b border-rose-800">
+<div class="-mx-2 mt-4 pb-4 border-rose-800">
   <ul class="mx-2 flex flex-wrap justify-center gap-3">
     {categories.map((c) => (
       <li>
@@ -78,8 +78,8 @@ categories.push({
           href={c.link}
           class:list={[
             {
-              'bg-rose-100 dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
-              'hover:bg-rose-100/50 dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? ''),
+              'bg-[var(--panel-light)] dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
+              'hover:bg-[var(--panel-transparent-light)] dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? ''),
               'opacity-50': c.status === 'protected'
             },
             'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-rose-800 dark:border-rose-300'

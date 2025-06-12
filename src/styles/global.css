@@ -2,10 +2,10 @@
 
 :root {
   --background-light: #ebe8db; /* color de fondo */
-  --panel-light: #d76c82; /* color de pastillas */
+  --panel-light: #ffe4e6; /* color de pastillas */
   --panel-transparent-light: color-mix(
     in oklab,
-    var(--panel-light) 30%,
+    var(--panel-light) 50%,
     transparent
   );
   --link-light: #b03052; /* color de los enlaces y los encabezados (los textos grandes) */
