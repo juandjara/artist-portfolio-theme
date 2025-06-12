@@ -93,7 +93,11 @@ export default function PostGrid({
             <a
               onClick={beforeNavigation}
               href={`/${language}/posts/${p.slug}`}
-              className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md shadow-xs shadow-rose-900 transition-shadow hover:shadow-md dark:shadow-rose-200"
+              style={{
+                "--tw-shadow": "3px 3px 1px 0px var(--link-light)",
+                border: "1px solid var(--link-light)",
+              }}
+              className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md transition-shadow hover:shadow-md dark:shadow-rose-200"
             >
               <div className="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
                 <img
