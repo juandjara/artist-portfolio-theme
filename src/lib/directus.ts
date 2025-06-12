@@ -70,7 +70,7 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
       let title = m.title ?? "";
       let url = m.url ?? "";
 
-      if (m.type === "page") {
+      if (m.type === "page" && m.page) {
         const page = m.page as Pages;
         const translations = getTranslations(page.translations, lang);
         if (translations?.title) {
@@ -78,7 +78,7 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
         }
         url = getRelativeLocaleUrl(lang, page.permalink ?? "", { normalizeLocale: false });
       }
-      if (m.type === "post") {
+      if (m.type === "post" && m.post) {
         const post = m.post as Posts;
         const translations = getTranslations(post.translations, lang);
         if (translations?.title) {
@@ -88,7 +88,7 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
       }
 
       return { url, title };
-    });
+    }).filter((m) => !!m.url && !!m.title);
 }
 
 export async function getPosts(categoryLink: string | null, language: string, includeProtected?: boolean) {
