@@ -11,6 +11,7 @@ const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 const block = Astro.props.block;
 const translations = getTranslations(block.translations, language);
 const content = translations?.content;
+
 ---
 
 <div

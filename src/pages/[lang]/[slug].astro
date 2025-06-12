@@ -54,10 +54,12 @@ const blocks = Astro.props.blocks.filter(
 ---
 
 <BaseLayout pageTitle={title}>
-  <button
-    id="back-button"
-    class="inline-block my-2 font-medium text-lg"
-    onclick="window.history.back()"
-  >&#8672; Back</button>
+  <div class="max-w-prose mx-auto">
+    <button
+      id="back-button"
+      class="inline-block my-2 font-medium text-lg"
+      onclick="window.history.back()"
+    >&#8672; Back</button>
+  </div>
   <Blocks blocks={blocks} />
 </BaseLayout>
