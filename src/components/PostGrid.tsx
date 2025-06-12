@@ -68,9 +68,9 @@ export default function PostGrid({
   return (
     <>
       <div className="mt-3 flex items-center justify-between">
-        <p>
+        {/* <p>
           <span className="text-lg font-medium">{posts.length}</span> posts
-        </p>
+        </p> */}
         {_numProtected ? (
           <p>
             <span className="text-lg font-medium">{_numProtected}</span>{" "}
