@@ -20,7 +20,7 @@ const lang = Astro.params.lang!
 
 ---
 
-<div class="max-w-3xl mx-auto mt-12">
+<div class="mx-auto mt-12">
   <a
     id="back-button"
     class="inline-block my-2 font-medium text-lg"
@@ -36,7 +36,7 @@ const lang = Astro.params.lang!
     >
       <Fragment set:html={post.content} />
     </div>
-    <aside>
+    <aside class="max-w-[360px]">
       <time class="mb-2 text-sm inline-block">{post.date}</time>
       <h2 class="mb-3 text-3xl text-link font-medium">{post.title}</h2>
       {post.description ? (
