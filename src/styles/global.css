@@ -1,15 +1,15 @@
 @import "./fonts.css";
 
 :root {
-  --background-light: #ebe8db; /* color de fondo */
-  --panel-light: #ffe4e6; /* color de pastillas */
+  --background-light: #fbfbfb; /* color de fondo */ /*antes #ebe8db */
+  --panel-light: #f2f3ff; /* color de pastillas */ /*antes #ffe4e6 */
   --panel-transparent-light: color-mix(
     in oklab,
     var(--panel-light) 50%,
     transparent
   );
-  --link-light: #b03052; /* color de los enlaces y los encabezados (los textos grandes) */
-  --text-light: #3d0301; /* color de texto */
+  --link-light: #2b2257; /* color de los enlaces y los encabezados (los textos grandes) */ /*antes #ffe4e6 */
+  --text-light: #8076b4; /* color de texto */ /*antes #3d0301 */
 
   --background-dark: #56021f;
   --panel-dark: #7d1c4a;
