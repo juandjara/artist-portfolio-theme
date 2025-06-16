@@ -12,7 +12,7 @@
   --text-light: #8076b4; /* color de texto */ /*antes #3d0301 */
 
   --background-dark: #56021f;
-  --panel-dark: #7d1c4a;
+  --panel-dark: #2b2257; /*antes #7d1c4a */
   --panel-transparent-dark: color-mix(
     in oklab,
     var(--panel-dark) 30%,
