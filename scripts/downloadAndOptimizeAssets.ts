@@ -347,6 +347,7 @@ async function main() {
   console.log("\n📥 Fetching asset metadata...\n")
   const files = await directus.request(
     readFiles({
+      limit: 500,
       filter: { id: { _in: Array.from(assetIds) } },
       fields: ["id", "filesize", "type", "filename_download"],
     }),
