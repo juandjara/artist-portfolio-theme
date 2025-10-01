@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run download-assets && astro build",
+    "build:skip-download": "astro build",
+    "download-assets": "tsx scripts/downloadAndOptimizeAssets.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -25,13 +27,18 @@
   },
   "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
   "devDependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "@iconify-json/fa-brands": "^1.2.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/mime-types": "^2.1.4",
     "axios": "^1.9.0",
     "dedent": "^1.6.0",
+    "dotenv": "^17.2.3",
     "prettier": "3.5.3",
     "prettier-plugin-astro": "0.14.1",
-    "prettier-plugin-tailwindcss": "0.6.11"
+    "prettier-plugin-tailwindcss": "0.6.11",
+    "sharp": "^0.34.4",
+    "tsx": "^4.20.6"
   }
 }

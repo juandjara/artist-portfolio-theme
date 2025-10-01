@@ -44,6 +44,11 @@ export function getTranslations<T extends TranslationsCommon>(
 }
 
 export function formatImageURL(id?: string | null, params?: string) {
+  // In production, we can't determine extension from ID alone, so we still use /assets/{id}
+  // The browser will handle it correctly when the server returns the file
+  if (import.meta.env.PROD) {
+    return id ? `/assets/${id}` : null
+  }
   return id && `${import.meta.env.DIRECTUS_URL}/assets/${id}?${params ?? ""}`
 }
 
@@ -57,6 +62,10 @@ export function transformMediaInHTML(
   const assetPattern = new RegExp(`${directusUrl}/assets/([a-f0-9-]+)`, "g")
 
   return html.replace(assetPattern, (match, assetId) => {
+    // In production, use local assets. In development, use Directus with transformations
+    if (import.meta.env.PROD) {
+      return `/assets/${assetId}`
+    }
     return `${directusUrl}/assets/${assetId}?width=${maxWidth}&quality=80&format=auto`
   })
 }

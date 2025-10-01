@@ -21,8 +21,8 @@ pnpm-debug.log*
 # generated types
 .astro/
 
-# temporary script tools
-scripts/
-
 # backup
 backup/
+
+# downloaded and optimized assets
+public/assets/
