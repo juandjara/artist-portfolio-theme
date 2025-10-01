@@ -28,9 +28,9 @@ const directus = createDirectus<DBSchema>(process.env.DIRECTUS_URL!)
   .with(rest())
   .with(staticToken(process.env.DIRECTUS_TOKEN!))
 
-
 const PUBLIC_ASSETS_DIR = path.join(process.cwd(), "public", "assets")
-const CACHE_FILE = path.join(PUBLIC_ASSETS_DIR, ".asset-cache.json")
+const CACHE_FILENAME = ".asset-cache.json"
+const CACHE_FILE = path.join(PUBLIC_ASSETS_DIR, CACHE_FILENAME)
 const MAX_WIDTH = 800
 const IMAGE_QUALITY = 80
 const VIDEO_CRF = 28 // Constant Rate Factor (lower = better quality, 18-28 is good)
@@ -368,7 +368,7 @@ async function main() {
   console.log(`   Others: ${others.length}`)
 
   // Process assets
-  console.log("\n⚙️  Processing assets...\n")
+  console.log("\n⚙️ Processing assets...\n")
 
   let processedCount = 0
   let skippedCount = 0
@@ -377,7 +377,7 @@ async function main() {
 
   for (const asset of assets) {
     const prefix = asset.type.startsWith("image/")
-      ? "🖼️ "
+      ? "🖼️"
       : asset.type.startsWith("video/")
         ? "🎬"
         : "📄"
@@ -410,16 +410,28 @@ async function main() {
 
   // Clean up orphaned files
   console.log("\n🧹 Cleaning up orphaned files...")
-  const existingFiles = fs
-    .readdirSync(PUBLIC_ASSETS_DIR)
-    .filter((f) => f !== ".asset-cache.json")
+  const existingFiles = fs.readdirSync(PUBLIC_ASSETS_DIR)
   const validIds = new Set(assets.map((a) => a.id))
   let removedCount = 0
 
   existingFiles.forEach((file) => {
-    if (!validIds.has(file) && !file.startsWith("temp_")) {
+    // Skip cache file
+    if (file === CACHE_FILE) {
+      return
+    }
+
+    // Skip temp files
+    if (file.startsWith("temp_")) {
+      return
+    }
+
+    // Extract ID from filename (remove extension)
+    const fileId = path.parse(file).name
+
+    // Remove file if its ID is not in validIds
+    if (!validIds.has(fileId)) {
       fs.unlinkSync(path.join(PUBLIC_ASSETS_DIR, file))
-      delete cache[file]
+      delete cache[fileId]
       removedCount++
     }
   })
