@@ -4,7 +4,7 @@ import {
   readTranslations,
   rest,
   staticToken,
-} from "@directus/sdk";
+} from "@directus/sdk"
 import type {
   CategoriesPosts,
   DBSchema,
@@ -12,23 +12,23 @@ import type {
   Pages,
   Posts,
   TranslationsCommon,
-} from "./directus.types";
-import { getRelativeLocaleUrl } from "astro:i18n";
+} from "./directus.types"
+import { getRelativeLocaleUrl } from "astro:i18n"
 
 const directus = createDirectus<DBSchema>(import.meta.env.DIRECTUS_URL)
   .with(rest())
-  .with(staticToken(import.meta.env.DIRECTUS_TOKEN));
+  .with(staticToken(import.meta.env.DIRECTUS_TOKEN))
 
-export default directus;
+export default directus
 
 const translationMap = {
-  'es': 'es-ES',
-  'en': 'en-US',
-  'ja': 'ja-JP',
+  es: "es-ES",
+  en: "en-US",
+  ja: "ja-JP",
 }
 
 function mapTranslation(langKey: string) {
-  return translationMap[langKey as keyof typeof translationMap] || langKey;
+  return translationMap[langKey as keyof typeof translationMap] || langKey
 }
 
 // anything on T can be "undefined" if not requested by the client "fields"
@@ -38,13 +38,27 @@ export function getTranslations<T extends TranslationsCommon>(
   langKey: string,
 ) {
   const lang = mapTranslation(langKey)
-  const arr = items ?? [];
-  const okItems = arr.filter((a) => a && typeof a !== "string") as Partial<T>[];
-  return okItems.find((item) => item.languages_code === lang);
+  const arr = items ?? []
+  const okItems = arr.filter((a) => a && typeof a !== "string") as Partial<T>[]
+  return okItems.find((item) => item.languages_code === lang)
 }
 
 export function formatImageURL(id?: string | null, params?: string) {
-  return id && `${import.meta.env.DIRECTUS_URL}/assets/${id}?${params ?? ""}`;
+  return id && `${import.meta.env.DIRECTUS_URL}/assets/${id}?${params ?? ""}`
+}
+
+export function transformMediaInHTML(
+  html?: string,
+  maxWidth: number = 700,
+): string {
+  if (!html) return ""
+
+  const directusUrl = import.meta.env.DIRECTUS_URL
+  const assetPattern = new RegExp(`${directusUrl}/assets/([a-f0-9-]+)`, "g")
+
+  return html.replace(assetPattern, (match, assetId) => {
+    return `${directusUrl}/assets/${assetId}?width=${maxWidth}&quality=80&format=auto`
+  })
 }
 
 export function getLanguageFilterBlock(lang: string) {
@@ -60,65 +74,91 @@ export function getLanguageFilterBlock(lang: string) {
         },
       },
     },
-  };
+  }
 }
 
 export function parseMenuItems(items: NavigationItems[], lang: string) {
   return items
     .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
     .map((m) => {
-      let title = m.title ?? "";
-      let url = m.url ?? "";
+      let title = m.title ?? ""
+      let url = m.url ?? ""
 
       if (m.type === "page" && m.page) {
-        const page = m.page as Pages;
-        const translations = getTranslations(page.translations, lang);
+        const page = m.page as Pages
+        const translations = getTranslations(page.translations, lang)
         if (translations?.title) {
-          title = translations?.title;
+          title = translations?.title
         }
-        url = getRelativeLocaleUrl(lang, page.permalink ?? "", { normalizeLocale: false });
+        url = getRelativeLocaleUrl(lang, page.permalink ?? "", {
+          normalizeLocale: false,
+        })
       }
       if (m.type === "post" && m.post) {
-        const post = m.post as Posts;
-        const translations = getTranslations(post.translations, lang);
+        const post = m.post as Posts
+        const translations = getTranslations(post.translations, lang)
         if (translations?.title) {
-          title = translations?.title;
+          title = translations?.title
         }
-        url = getRelativeLocaleUrl(lang, `/post/${post.slug}`, { normalizeLocale: false });
+        url = getRelativeLocaleUrl(lang, `/post/${post.slug}`, {
+          normalizeLocale: false,
+        })
       }
 
-      return { url, title };
-    }).filter((m) => !!m.url && !!m.title);
+      return { url, title }
+    })
+    .filter((m) => !!m.url && !!m.title)
 }
 
-export async function getPosts(categoryLink: string | null, language: string, includeProtected?: boolean) {
+export async function getPosts(
+  categoryLink: string | null,
+  language: string,
+  includeProtected?: boolean,
+) {
   let numProtected = 0
   let rows = [] as Posts[]
 
   if (categoryLink) {
-    const categories = await directus.request(readItems('categories', {
-      filter: {
-        permalink: {
-          _eq: categoryLink
-        }
-      },
-      fields: ['password', {
-        posts: ['*', {
-          posts_id: ['*', {
-            translations: ['*']
-          }]
-        }]
-      }]
-    }))
+    const categories = await directus.request(
+      readItems("categories", {
+        filter: {
+          permalink: {
+            _eq: categoryLink,
+          },
+        },
+        fields: [
+          "password",
+          {
+            posts: [
+              "*",
+              {
+                posts_id: [
+                  "*",
+                  {
+                    translations: ["*"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }),
+    )
     const category = categories[0]
     const allPosts = (category?.posts ?? []).map((p) => p.posts_id as Posts)
-    const unprotectedPosts = includeProtected ? allPosts :  allPosts.filter((p) => p.protected !== true)
-    numProtected = category.password ? allPosts.length - unprotectedPosts.length : 0
+    const unprotectedPosts = includeProtected
+      ? allPosts
+      : allPosts.filter((p) => p.protected !== true)
+    numProtected = category.password
+      ? allPosts.length - unprotectedPosts.length
+      : 0
     rows = unprotectedPosts
   } else {
-    const allPosts = await directus.request(readItems('posts', {
-      fields: ["*", { translations: ["*"] }]
-    })) as Posts[]
+    const allPosts = (await directus.request(
+      readItems("posts", {
+        fields: ["*", { translations: ["*"] }],
+      }),
+    )) as Posts[]
     const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
     numProtected = 0 //allPosts.length - unprotectedPosts.length
     rows = unprotectedPosts
@@ -128,8 +168,8 @@ export async function getPosts(categoryLink: string | null, language: string, in
     numProtected,
     posts: rows.map((p) => {
       const translations = getTranslations(p.translations, language)
-      const title = translations?.title ?? ''
-      const content = translations?.content ?? ''
+      const title = translations?.title ?? ""
+      const content = translations?.content ?? ""
       return {
         id: p.id,
         title,
@@ -137,48 +177,63 @@ export async function getPosts(categoryLink: string | null, language: string, in
         image: formatImageURL(p.image as string) ?? "",
         slug: p.slug,
       }
-    })
+    }),
   }
 }
 
 export async function getAllPosts() {
-  const allPosts = await directus.request(readItems('posts', {
-    fields: ["*", { translations: ["*"] }]
-  })) as Posts[]
+  const allPosts = (await directus.request(
+    readItems("posts", {
+      fields: ["*", { translations: ["*"] }],
+    }),
+  )) as Posts[]
   return allPosts
 }
 
 export async function getPost(slug: string) {
-  const post = await directus.request(readItems('posts', {
-    filter: { slug: { _eq: slug } },
-    fields: ["*", { translations: ["*"] }]
-  }))
+  const post = await directus.request(
+    readItems("posts", {
+      filter: { slug: { _eq: slug } },
+      fields: ["*", { translations: ["*"] }],
+    }),
+  )
   return post[0]
 }
 
 export async function getCategories(language: string) {
-  const rows = await directus.request(readItems('categories', {
-    fields: [
-      "*",
-      {
-        translations: ["*"],
-        posts: ['*'],
-        blocks: ['*', {
-          item: {
-            block_embed: ['*'],
-            block_gallery: ['*'],
-            block_richtext: ['*', {
-              translations: ['*']
-            }]
-          }
-        }]
-      }]
-  }))
+  const rows = await directus.request(
+    readItems("categories", {
+      fields: [
+        "*",
+        {
+          translations: ["*"],
+          posts: ["*"],
+          blocks: [
+            "*",
+            {
+              item: {
+                block_embed: ["*"],
+                block_gallery: ["*"],
+                block_richtext: [
+                  "*",
+                  {
+                    translations: ["*"],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }),
+  )
   return rows.map((category) => {
-    const translations = getTranslations(category.translations, language);
-    const name = translations?.name;
-    const postIds = category.posts?.map((p) => (p as CategoriesPosts).posts_id as string)
-  
+    const translations = getTranslations(category.translations, language)
+    const name = translations?.name
+    const postIds = category.posts?.map(
+      (p) => (p as CategoriesPosts).posts_id as string,
+    )
+
     return {
       name,
       id: category.id,
@@ -187,9 +242,11 @@ export async function getCategories(language: string) {
       permalink: category.permalink,
       postIds,
       blocks: category.blocks,
-      link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
-    };
-  });
+      link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, {
+        normalizeLocale: false,
+      }),
+    }
+  })
 }
 
 export function getPageBlockQuery() {
@@ -229,17 +286,19 @@ export async function getPage(link: string) {
         "*",
         { translations: ["*"] },
         {
-          blocks: getPageBlockQuery()
+          blocks: getPageBlockQuery(),
         },
       ],
       limit: 1,
     }),
-  );
+  )
   return pages[0]
 }
 
 export async function translateString(key: string, langKey: string) {
-  const data = await directus.request(readTranslations({ filter: { key: {  _eq: key } } }))
+  const data = await directus.request(
+    readTranslations({ filter: { key: { _eq: key } } }),
+  )
   const item = data.find((d) => d.language === mapTranslation(langKey))
   return item?.value ?? key
 }

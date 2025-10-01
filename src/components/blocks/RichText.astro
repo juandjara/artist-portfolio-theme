@@ -1,24 +1,20 @@
 ---
-import { getTranslations } from "../../lib/directus";
-import type { BlockRichtext } from "../../lib/directus.types";
-import { i18nConfig } from "../../lib/i18n";
+import { getTranslations, transformMediaInHTML } from "../../lib/directus"
+import type { BlockRichtext } from "../../lib/directus.types"
+import { i18nConfig } from "../../lib/i18n"
 
 interface Props {
-  block: BlockRichtext;
+  block: BlockRichtext
 }
 
-const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
-const block = Astro.props.block;
-const translations = getTranslations(block.translations, language);
-const content = translations?.content;
-
+const language = Astro.currentLocale ?? i18nConfig.defaultLocale
+const block = Astro.props.block
+const translations = getTranslations(block.translations, language)
+const content = transformMediaInHTML(translations?.content ?? undefined, 800)
 ---
 
 <div
-  class="my-4 mx-auto prose dark:prose-invert
-  prose-h1:font-bold prose-h1:text-xl
-  prose-a:text-blue-500 prose-p:text-justify prose-img:rounded-xl
-  prose-headings:underline"
+  class="mx-auto my-4 prose dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-xl"
 >
   <Fragment set:html={content} />
 </div>
