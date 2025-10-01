@@ -43,13 +43,45 @@ export function getTranslations<T extends TranslationsCommon>(
   return okItems.find((item) => item.languages_code === lang)
 }
 
-export function formatImageURL(id?: string | null, params?: string) {
-  // In production, we can't determine extension from ID alone, so we still use /assets/{id}
-  // The browser will handle it correctly when the server returns the file
-  if (import.meta.env.PROD) {
-    return id ? `/assets/${id}` : null
+// MIME type to extension mapping
+function getExtensionFromMimeType(mimeType: string): string {
+  const mimeMap: Record<string, string> = {
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/png": ".png",
+    "image/gif": ".gif",
+    "image/webp": ".webp",
+    "image/avif": ".avif",
+    "image/svg+xml": ".svg",
+    "video/mp4": ".mp4",
+    "video/mpeg": ".mpeg",
+    "video/quicktime": ".mov",
+    "video/x-msvideo": ".avi",
+    "video/webm": ".webm",
+    "video/x-matroska": ".mkv",
   }
-  return id && `${import.meta.env.DIRECTUS_URL}/assets/${id}?${params ?? ""}`
+  return mimeMap[mimeType] || ""
+}
+
+export function formatImageURL(id?: string | null, params?: string, type?: string | null) {
+  if (!id) return null
+
+  if (import.meta.env.PROD) {
+    // In production, use local assets with correct extension
+    // Images -> .webp, Videos -> .mp4
+    let ext = ""
+    if (type) {
+      if (type.startsWith("image/")) {
+        ext = ".webp"
+      } else if (type.startsWith("video/")) {
+        ext = ".mp4"
+      } else {
+        ext = getExtensionFromMimeType(type)
+      }
+    }
+    return `/assets/${id}${ext}`
+  }
+  return `${import.meta.env.DIRECTUS_URL}/assets/${id}?${params ?? ""}`
 }
 
 export function transformMediaInHTML(
@@ -62,9 +94,18 @@ export function transformMediaInHTML(
   const assetPattern = new RegExp(`${directusUrl}/assets/([a-f0-9-]+)`, "g")
 
   return html.replace(assetPattern, (match, assetId) => {
-    // In production, use local assets. In development, use Directus with transformations
+    // In production, use the actual file extensions from our download script
     if (import.meta.env.PROD) {
-      return `/assets/${assetId}`
+      // Look backwards in the HTML to find the tag type
+      const indexInHtml = html.indexOf(match)
+      const before = html.substring(Math.max(0, indexInHtml - 100), indexInHtml)
+
+      // Check if it's in a video tag -> .mp4 (ffmpeg output)
+      if (before.includes('<video') || before.includes('<source')) {
+        return `/assets/${assetId}.mp4`
+      }
+      // Assume image -> .webp (Directus transformation output)
+      return `/assets/${assetId}.webp`
     }
     return `${directusUrl}/assets/${assetId}?width=${maxWidth}&quality=80&format=auto`
   })
@@ -145,6 +186,7 @@ export async function getPosts(
                   "*",
                   {
                     translations: ["*"],
+                    image: ["*"],
                   },
                 ],
               },
@@ -165,7 +207,7 @@ export async function getPosts(
   } else {
     const allPosts = (await directus.request(
       readItems("posts", {
-        fields: ["*", { translations: ["*"] }],
+        fields: ["*", { translations: ["*"], image: ["*"] }],
       }),
     )) as Posts[]
     const unprotectedPosts = allPosts.filter((p) => p.protected !== true)
@@ -179,11 +221,12 @@ export async function getPosts(
       const translations = getTranslations(p.translations, language)
       const title = translations?.title ?? ""
       const content = translations?.content ?? ""
+      const imageFile = typeof p.image === 'object' && p.image ? p.image : null
       return {
         id: p.id,
         title,
         content,
-        image: formatImageURL(p.image as string) ?? "",
+        image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
         slug: p.slug,
       }
     }),
@@ -193,7 +236,7 @@ export async function getPosts(
 export async function getAllPosts() {
   const allPosts = (await directus.request(
     readItems("posts", {
-      fields: ["*", { translations: ["*"] }],
+      fields: ["*", { translations: ["*"], image: ["*"] }],
     }),
   )) as Posts[]
   return allPosts
@@ -203,7 +246,7 @@ export async function getPost(slug: string) {
   const post = await directus.request(
     readItems("posts", {
       filter: { slug: { _eq: slug } },
-      fields: ["*", { translations: ["*"] }],
+      fields: ["*", { translations: ["*"], image: ["*"] }],
     }),
   )
   return post[0]
@@ -269,7 +312,7 @@ export function getPageBlockQuery() {
           {
             categories: [
               "*",
-              { categories_id: ["*", { translations: ["*"] }] },
+              { categories_id: ["*", { translations: ["*"], background: ["*"] }] },
             ],
           },
         ],

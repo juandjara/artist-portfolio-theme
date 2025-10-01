@@ -15,13 +15,14 @@ export async function getStaticPaths() {
       const title = translations?.title ?? ''
       const content = translations?.content ?? ''
       const description = translations?.description ?? ''
+      const imageFile = typeof p.image === 'object' && p.image ? p.image : null
       const postProp = {
         id: p.id,
         title,
         content,
         description,
         date: new Date(p.published_at ?? '').toLocaleDateString(),
-        image: formatImageURL(p.image as string) ?? "",
+        image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
         slug: p.slug!,
       }
 

@@ -19,10 +19,11 @@ const categories = block.categories.map((c) => {
   const category = bcc.categories_id as Category;
   const translations = getTranslations(category.translations, language);
   const name = translations?.name;
+  const backgroundFile = typeof category.background === 'object' && category.background ? category.background : null;
 
   return {
     name,
-    background: category.background,
+    background: backgroundFile,
     link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, { normalizeLocale: false })
   };
 });
@@ -43,7 +44,7 @@ const seeAll = await translateString('see-all', language)
             <div class="transform-3d transition-transform group-hover:scale-110 duration-300 ease-out absolute z-10 inset-0">
               <img
                 class="rounded-lg object-cover object-center h-full w-full"
-                src={formatImageURL(c.background as string, "width=500")}
+                src={formatImageURL(c.background.id, "width=500", c.background.type)}
               />
             </div>
           ) : null}

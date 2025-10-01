@@ -11,7 +11,6 @@ import fs from "fs"
 import path from "path"
 import { promisify } from "util"
 import { exec as execCallback } from "child_process"
-import sharp from "sharp"
 import crypto from "crypto"
 import ffmpegInstaller from "@ffmpeg-installer/ffmpeg"
 import ffprobeInstaller from "@ffprobe-installer/ffprobe"
@@ -29,25 +28,6 @@ const directus = createDirectus<DBSchema>(process.env.DIRECTUS_URL!)
   .with(rest())
   .with(staticToken(process.env.DIRECTUS_TOKEN!))
 
-// MIME type to extension mapping
-function getExtensionFromMimeType(mimeType: string): string {
-  const mimeMap: Record<string, string> = {
-    "image/jpeg": ".jpg",
-    "image/jpg": ".jpg",
-    "image/png": ".png",
-    "image/gif": ".gif",
-    "image/webp": ".webp",
-    "image/avif": ".avif",
-    "image/svg+xml": ".svg",
-    "video/mp4": ".mp4",
-    "video/mpeg": ".mpeg",
-    "video/quicktime": ".mov",
-    "video/x-msvideo": ".avi",
-    "video/webm": ".webm",
-    "video/x-matroska": ".mkv",
-  }
-  return mimeMap[mimeType] || ""
-}
 
 const PUBLIC_ASSETS_DIR = path.join(process.cwd(), "public", "assets")
 const CACHE_FILE = path.join(PUBLIC_ASSETS_DIR, ".asset-cache.json")
@@ -70,6 +50,7 @@ interface AssetInfo {
   filesize: number
   filename: string
   url: string
+  isImage: boolean
 }
 
 async function ensureDir(dir: string) {
@@ -102,24 +83,6 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
   const arrayBuffer = await response.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
   fs.writeFileSync(outputPath, buffer)
-}
-
-async function optimizeImage(
-  inputPath: string,
-  outputPath: string,
-): Promise<number> {
-  await sharp(inputPath)
-    .resize(MAX_WIDTH, null, {
-      withoutEnlargement: true,
-      fit: "inside",
-    })
-    .jpeg({ quality: IMAGE_QUALITY })
-    .png({ quality: IMAGE_QUALITY })
-    .webp({ quality: IMAGE_QUALITY })
-    .toFile(outputPath)
-
-  const stats = fs.statSync(outputPath)
-  return stats.size
 }
 
 async function optimizeVideo(
@@ -159,50 +122,81 @@ async function processAsset(
   asset: AssetInfo,
   cache: AssetCache,
 ): Promise<{ saved: boolean; size: number }> {
-  // Get file extension from MIME type or original filename
-  const ext = getExtensionFromMimeType(asset.type) || path.extname(asset.filename) || ""
-  const tempPath = path.join(PUBLIC_ASSETS_DIR, `temp_${asset.id}${ext}`)
+  // Determine file extension based on what we actually download
+  // Images: always .webp (Directus transforms with format=webp)
+  // Videos: always .mp4 (ffmpeg outputs MP4)
+  // Other: use original filename extension as fallback
+  let ext: string
+  if (asset.isImage) {
+    ext = ".webp"
+  } else if (asset.type.startsWith("video/")) {
+    ext = ".mp4"
+  } else {
+    ext = path.extname(asset.filename) || ""
+  }
   const finalPath = path.join(PUBLIC_ASSETS_DIR, `${asset.id}${ext}`)
 
-  // Download file
-  await downloadFile(asset.url, tempPath)
-  const fileHash = getFileHash(tempPath)
+  // For images, download with Directus transformations applied
+  // For videos, download to temp and optimize with ffmpeg
+  if (asset.isImage) {
+    // Download already-transformed image directly
+    await downloadFile(asset.url, finalPath)
+    const processedSize = fs.statSync(finalPath).size
 
-  // Check cache
-  if (
-    cache[asset.id] &&
-    cache[asset.id].hash === fileHash &&
-    fs.existsSync(finalPath)
-  ) {
-    fs.unlinkSync(tempPath)
-    return { saved: false, size: cache[asset.id].processedSize }
-  }
+    // Update cache
+    cache[asset.id] = {
+      hash: "", // No need to hash, we trust Directus transformation
+      processedAt: Date.now(),
+      originalSize: asset.filesize,
+      processedSize,
+    }
 
-  // Process based on type
-  let processedSize: number
-
-  if (asset.type.startsWith("image/")) {
-    processedSize = await optimizeImage(tempPath, finalPath)
+    return { saved: true, size: processedSize }
   } else if (asset.type.startsWith("video/")) {
-    processedSize = await optimizeVideo(tempPath, finalPath)
+    // Videos need ffmpeg optimization
+    const tempPath = path.join(PUBLIC_ASSETS_DIR, `temp_${asset.id}${ext}`)
+
+    await downloadFile(asset.url, tempPath)
+    const fileHash = getFileHash(tempPath)
+
+    // Check cache
+    if (
+      cache[asset.id] &&
+      cache[asset.id].hash === fileHash &&
+      fs.existsSync(finalPath)
+    ) {
+      fs.unlinkSync(tempPath)
+      return { saved: false, size: cache[asset.id].processedSize }
+    }
+
+    const processedSize = await optimizeVideo(tempPath, finalPath)
+
+    // Clean up temp file
+    fs.unlinkSync(tempPath)
+
+    // Update cache
+    cache[asset.id] = {
+      hash: fileHash,
+      processedAt: Date.now(),
+      originalSize: asset.filesize,
+      processedSize,
+    }
+
+    return { saved: true, size: processedSize }
   } else {
     // Copy other files as-is
-    fs.copyFileSync(tempPath, finalPath)
-    processedSize = fs.statSync(finalPath).size
+    await downloadFile(asset.url, finalPath)
+    const processedSize = fs.statSync(finalPath).size
+
+    cache[asset.id] = {
+      hash: "",
+      processedAt: Date.now(),
+      originalSize: asset.filesize,
+      processedSize,
+    }
+
+    return { saved: true, size: processedSize }
   }
-
-  // Clean up temp file
-  fs.unlinkSync(tempPath)
-
-  // Update cache
-  cache[asset.id] = {
-    hash: fileHash,
-    processedAt: Date.now(),
-    originalSize: asset.filesize,
-    processedSize,
-  }
-
-  return { saved: true, size: processedSize }
 }
 
 async function collectAssetIds(): Promise<Set<string>> {
@@ -239,7 +233,10 @@ async function collectAssetIds(): Promise<Set<string>> {
             {
               item: {
                 block_richtext: ["*", { translations: ["*"] }],
-                block_gallery: ["*", { items: ["*", { directus_file: ["*"] }] }],
+                block_gallery: [
+                  "*",
+                  { items: ["*", { directus_file: ["*"] }] },
+                ],
               },
             },
           ],
@@ -282,7 +279,10 @@ async function collectAssetIds(): Promise<Set<string>> {
             {
               item: {
                 block_richtext: ["*", { translations: ["*"] }],
-                block_gallery: ["*", { items: ["*", { directus_file: ["*"] }] }],
+                block_gallery: [
+                  "*",
+                  { items: ["*", { directus_file: ["*"] }] },
+                ],
                 block_hero: ["*", { image: ["*"] }],
               },
             },
@@ -339,13 +339,22 @@ async function main() {
     }),
   )
 
-  const assets: AssetInfo[] = files.map((file: any) => ({
-    id: file.id,
-    type: file.type || "application/octet-stream",
-    filesize: file.filesize || 0,
-    filename: file.filename_download,
-    url: `${process.env.DIRECTUS_URL}/assets/${file.id}`,
-  }))
+  const assets: AssetInfo[] = files.map((file: any) => {
+    const isImage = (file.type || "").startsWith("image/")
+    // For images, use Directus transformation params in URL
+    const url = isImage
+      ? `${process.env.DIRECTUS_URL}/assets/${file.id}?width=${MAX_WIDTH}&quality=${IMAGE_QUALITY}&format=webp`
+      : `${process.env.DIRECTUS_URL}/assets/${file.id}`
+
+    return {
+      id: file.id,
+      type: file.type || "application/octet-stream",
+      filesize: file.filesize || 0,
+      filename: file.filename_download,
+      url,
+      isImage,
+    }
+  })
 
   // Categorize assets
   const images = assets.filter((a) => a.type.startsWith("image/"))
@@ -367,12 +376,11 @@ async function main() {
   let totalProcessedSize = 0
 
   for (const asset of assets) {
-    const prefix =
-      asset.type.startsWith("image/")
-        ? "🖼️ "
-        : asset.type.startsWith("video/")
-          ? "🎬"
-          : "📄"
+    const prefix = asset.type.startsWith("image/")
+      ? "🖼️ "
+      : asset.type.startsWith("video/")
+        ? "🎬"
+        : "📄"
 
     try {
       const result = await processAsset(asset, cache)
@@ -435,7 +443,9 @@ async function main() {
   console.log(`🗑️  Assets removed:    ${removedCount}`)
   console.log(`\n💾 Original size:     ${formatBytes(totalOriginalSize)}`)
   console.log(`📦 Optimized size:    ${formatBytes(totalProcessedSize)}`)
-  console.log(`✨ Space saved:       ${formatBytes(totalSaved)} (${savedPercent}%)`)
+  console.log(
+    `✨ Space saved:       ${formatBytes(totalSaved)} (${savedPercent}%)`,
+  )
   console.log("\n✅ Asset optimization complete!\n")
 }
 

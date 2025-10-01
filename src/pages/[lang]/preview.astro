@@ -51,13 +51,14 @@ if (slug) {
     const title = translations?.title ?? ''
     const content = translations?.content ?? ''
     const description = translations?.description ?? ''
+    const imageFile = typeof post.image === 'object' && post.image ? post.image : null
     postDetail = {
       id: post.id,
       title,
       content,
       description,
       date: new Date(post.published_at ?? '').toLocaleDateString(),
-      image: formatImageURL(post.image as string) ?? "",
+      image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
       slug: post.slug!,
     }
   }
