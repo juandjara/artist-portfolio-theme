@@ -3,6 +3,7 @@ import {
   createDirectus,
   readItems,
   readFiles,
+  readSingleton,
   rest,
   staticToken,
 } from "@directus/sdk"
@@ -204,7 +205,19 @@ async function collectAssetIds(): Promise<Set<string>> {
 
   console.log("🔍 Scanning content for assets...\n")
 
-  // 1. Posts
+  // 1. Globals (favicon)
+  const globals = await directus.request(
+    readSingleton("globals", {
+      fields: ["*", { favicon: ["*"] }],
+    }),
+  )
+
+  if (globals.favicon && typeof globals.favicon === "object") {
+    const favicon = globals.favicon as any
+    if (favicon.id) assetIds.add(favicon.id)
+  }
+
+  // 2. Posts
   const posts = await directus.request(
     readItems("posts", {
       fields: ["*", { translations: ["*"], image: ["*"] }],
@@ -221,7 +234,7 @@ async function collectAssetIds(): Promise<Set<string>> {
     })
   })
 
-  // 2. Categories
+  // 3. Categories
   const categories = await directus.request(
     readItems("categories", {
       fields: [
@@ -268,7 +281,7 @@ async function collectAssetIds(): Promise<Set<string>> {
     })
   })
 
-  // 3. Pages
+  // 4. Pages
   const pages = await directus.request(
     readItems("pages", {
       fields: [
@@ -398,7 +411,7 @@ async function main() {
         )
       } else {
         skippedCount++
-        console.log(`   ⏭️  ${asset.filename} - cached`)
+        console.log(`   ⏭️ ${asset.filename} - cached`)
       }
     } catch (error) {
       console.error(`   ❌ Failed to process ${asset.filename}: ${error}`)
