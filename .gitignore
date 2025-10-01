@@ -26,3 +26,6 @@ backup/
 
 # downloaded and optimized assets
 public/assets/
+
+.netlify/
+!.netlify/v1/config.json
