@@ -1,18 +1,28 @@
-import fs from 'fs/promises'
-import { createDirectus, createItem, importFile, rest, staticToken } from '@directus/sdk'
-import type { DBSchema } from '../src/lib/directus.types';
-import { basename, join } from 'path';
-import { createReadStream } from 'fs';
-import FormData from 'form-data'
-import axios from 'axios'
-import dedent from 'dedent'
+import fs from "fs/promises"
+import {
+  createDirectus,
+  createItem,
+  importFile,
+  rest,
+  staticToken,
+} from "@directus/sdk"
+import type { DBSchema } from "../src/lib/directus.types"
+import { basename, join } from "path"
+import { createReadStream } from "fs"
+import FormData from "form-data"
+import axios from "axios"
+import dedent from "dedent"
+import dotenv from "dotenv"
 
-const UPLOADS_FOLDER = 'e6308546-92fb-4b10-b586-eefaf1d97f7f'
-const ASSET_PREFIX = 'https://directus.djara.dev/assets'
+// Load environment variables
+dotenv.config()
 
-const directus = createDirectus<DBSchema>('https://directus.djara.dev')
-  .with(staticToken('WOL9-dkXr0Rr5veC7oCUO-mz3gx3R5YY'))
+const UPLOADS_FOLDER = "e6308546-92fb-4b10-b586-eefaf1d97f7f"
+const ASSET_PREFIX = "https://directus.djara.dev/assets"
+
+const directus = createDirectus<DBSchema>(process.env.DIRECTUS_URL!)
   .with(rest())
+  .with(staticToken(process.env.DIRECTUS_TOKEN!))
 
 type ArtStationItem = {
   title: string
@@ -28,7 +38,7 @@ type ArtStationItem = {
 }
 
 type ArtStationData = {
-  data: ArtStationItem[],
+  data: ArtStationItem[]
   total_count: number
 }
 
@@ -51,22 +61,24 @@ async function uploadFile(path: string) {
   const fd = new FormData()
   const _path = join(process.cwd(), path)
   const file = createReadStream(_path)
-  fd.append('folder', UPLOADS_FOLDER)
-  fd.append('file', file)
-  const res = await axios.post('https://directus.djara.dev/files', fd)
+  fd.append("folder", UPLOADS_FOLDER)
+  fd.append("file", file)
+  const res = await axios.post("https://directus.djara.dev/files", fd)
   console.log(res.data)
   return res.data.data
 }
 
 async function importThumbnail(post: NewData) {
   const imageUrl = post.thumbnail
-  if (imageUrl.startsWith('http')) {
-    const req = await directus.request(importFile(imageUrl, {
-      title: post.title,
-      description: post.description,
-      tags: [post.category],
-      folder: UPLOADS_FOLDER
-    }))
+  if (imageUrl.startsWith("http")) {
+    const req = await directus.request(
+      importFile(imageUrl, {
+        title: post.title,
+        description: post.description,
+        tags: [post.category],
+        folder: UPLOADS_FOLDER,
+      }),
+    )
     return req.id
   } else {
     const req = await uploadFile(post.thumbnail)
@@ -76,8 +88,8 @@ async function importThumbnail(post: NewData) {
 
 function getIframeHtml(url: string) {
   const params = new URL(url).searchParams
-  const start = params.get('t')
-  const id = params.get('v')
+  const start = params.get("t")
+  const id = params.get("v")
   const src = `https://www.youtube-nocookie.com/embed/${id}?start=${start}`
 
   return dedent`
@@ -93,8 +105,8 @@ function getIframeHtml(url: string) {
   ></iframe>`
 }
 
-async function getFileHtml(file: NewData['files'][number]) {
-  if (file.type === 'embed/youtube') {
+async function getFileHtml(file: NewData["files"][number]) {
+  if (file.type === "embed/youtube") {
     return getIframeHtml(file.url)
   } else {
     let id = file.id
@@ -104,13 +116,11 @@ async function getFileHtml(file: NewData['files'][number]) {
     }
 
     const src = `${ASSET_PREFIX}/${id}`
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       return `<figure><img data-type="${file.type}" class="directus-file directus-file-image" src="${src}" alt="${basename(file.url)}" /></figure>`
-    }
-    else if (file.type.startsWith('video/')) {
+    } else if (file.type.startsWith("video/")) {
       return `<video data-type="${file.type}" class="directus-file directus-file-video" src="${src}" controls />`
-    }
-    else {
+    } else {
       return `<div data-type="${file.type}" class="directus-file directus-file-other"><a href="${src}">${src}</a></div>`
     }
   }
@@ -118,23 +128,23 @@ async function getFileHtml(file: NewData['files'][number]) {
 
 async function main() {
   try {
-    const file = await fs.readFile('./new_data.json')
+    const file = await fs.readFile("./new_data.json")
     const text = file.toString()
     const data = JSON.parse(text) as NewData[]
-    
+
     // TODO: Delete files and items from posts and posts_translations
     for (const post of data) {
-      if (post.upload === 'complete') {
+      if (post.upload === "complete") {
         console.log(`Post ${post.title} already uploaded`)
         continue
       }
 
       let postId
 
-      if (post.upload === 'partial') {
-        console.log('Continuing upload for post ', post.title)
+      if (post.upload === "partial") {
+        console.log("Continuing upload for post ", post.title)
         if (!post.id) {
-          throw new Error('cannot continue post upload without a post id')
+          throw new Error("cannot continue post upload without a post id")
         }
 
         postId = post.id
@@ -143,32 +153,36 @@ async function main() {
         console.log(`Importing thumbnail "${post.thumbnail}"`)
         const thumbnailId = await importThumbnail(post)
         console.log(`✅ Thumbnail imported with id ${thumbnailId}`)
-        const newPost = await directus.request(createItem('posts', {
-          slug: post.slug,
-          status: 'published',
-          protected: false,
-          sort: data.indexOf(post),
-          image: thumbnailId,
-        }))
+        const newPost = await directus.request(
+          createItem("posts", {
+            slug: post.slug,
+            status: "published",
+            protected: false,
+            sort: data.indexOf(post),
+            image: thumbnailId,
+          }),
+        )
         postId = newPost.id
-        console.log('✅ Post created')
+        console.log("✅ Post created")
       }
 
-      let content = ''
+      let content = ""
       for (const file of post.files) {
         const fragment = await getFileHtml(file)
         content += `${fragment}<br /><br />`
       }
 
       console.log(`Creating translation for post "${post.title}"`)
-      await directus.request(createItem('posts_translations', {
-        posts_id: postId,
-        languages_code: 'en-US',
-        title: post.title,
-        description: post.description,
-        content
-      }))
-      console.log('✅ Translation created')
+      await directus.request(
+        createItem("posts_translations", {
+          posts_id: postId,
+          languages_code: "en-US",
+          title: post.title,
+          description: post.description,
+          content,
+        }),
+      )
+      console.log("✅ Translation created")
     }
 
     // for (const post of json.data.slice(1)) {
@@ -204,10 +218,10 @@ async function main() {
     //   console.log('✅ Translation created')
     // }
   } catch (err) {
-    if ('errors' in (err as any)) {
-      console.error('⭕️ Error: ', (err as any).errors)    
+    if ("errors" in (err as any)) {
+      console.error("⭕️ Error: ", (err as any).errors)
     } else {
-      console.error('⭕️ Error: ', err)
+      console.error("⭕️ Error: ", err)
     }
   }
 }

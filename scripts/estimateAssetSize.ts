@@ -1,5 +1,15 @@
-import { createDirectus, readItems, readFiles, rest, staticToken } from "@directus/sdk"
+import {
+  createDirectus,
+  readItems,
+  readFiles,
+  rest,
+  staticToken,
+} from "@directus/sdk"
 import type { DBSchema } from "../src/lib/directus.types"
+import dotenv from "dotenv"
+
+// Load environment variables
+dotenv.config()
 
 const directus = createDirectus<DBSchema>(process.env.DIRECTUS_URL!)
   .with(rest())
@@ -29,9 +39,7 @@ async function estimateAssetSize() {
     // Images/videos in HTML content
     post.translations?.forEach((trans: any) => {
       if (trans.content) {
-        const matches = trans.content.matchAll(
-          /\/assets\/([a-f0-9-]+)/g,
-        )
+        const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
         for (const match of matches) {
           assetIds.add(match[1])
         }
@@ -82,9 +90,7 @@ async function estimateAssetSize() {
         if (item.translations) {
           item.translations.forEach((trans: any) => {
             if (trans.content) {
-              const matches = trans.content.matchAll(
-                /\/assets\/([a-f0-9-]+)/g,
-              )
+              const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
               for (const match of matches) {
                 assetIds.add(match[1])
               }
@@ -141,9 +147,7 @@ async function estimateAssetSize() {
         if (item.translations) {
           item.translations.forEach((trans: any) => {
             if (trans.content) {
-              const matches = trans.content.matchAll(
-                /\/assets\/([a-f0-9-]+)/g,
-              )
+              const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
               for (const match of matches) {
                 assetIds.add(match[1])
               }
@@ -180,7 +184,14 @@ async function estimateAssetSize() {
           _in: Array.from(assetIds),
         },
       },
-      fields: ["id", "filesize", "type", "width", "height", "filename_download"],
+      fields: [
+        "id",
+        "filesize",
+        "type",
+        "width",
+        "height",
+        "filename_download",
+      ],
     }),
   )
 
@@ -235,7 +246,9 @@ async function estimateAssetSize() {
 
   console.log("📊 Netlify Free Plan Limits:")
   console.log(`   Storage limit:    10 GB`)
-  console.log(`   Your usage:       ${formatBytes(totalTransformedSize)} (${Math.round((totalTransformedSize / (10 * 1024 * 1024 * 1024)) * 100)}%)`)
+  console.log(
+    `   Your usage:       ${formatBytes(totalTransformedSize)} (${Math.round((totalTransformedSize / (10 * 1024 * 1024 * 1024)) * 100)}%)`,
+  )
   console.log(`   Bandwidth limit:  100 GB/month\n`)
 
   if (totalTransformedSize < 1 * 1024 * 1024 * 1024) {
