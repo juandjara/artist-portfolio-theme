@@ -10,7 +10,7 @@ interface Props {
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale
 const block = Astro.props.block
 const translations = getTranslations(block.translations, language)
-const content = transformMediaInHTML(translations?.content ?? undefined, 800)
+const content = transformMediaInHTML(translations?.content ?? undefined)
 ---
 
 <div

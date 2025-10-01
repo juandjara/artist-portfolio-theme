@@ -1,11 +1,13 @@
 ---
-import type { BlockEmbed } from '../../lib/directus.types'
+import { transformMediaInHTML } from "../../lib/directus"
+import type { BlockEmbed } from "../../lib/directus.types"
 
 interface Props {
   block: BlockEmbed
 }
 
 const block = Astro.props.block
-
+const content = transformMediaInHTML(block.embed_code ?? undefined)
 ---
-<Fragment set:html={block.embed_code} />
+
+<Fragment set:html={content} />

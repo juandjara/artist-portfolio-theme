@@ -315,7 +315,7 @@ async function collectAssetIds(): Promise<Set<string>> {
     })
   })
 
-  console.log(`   Found ${assetIds.size} unique assets`)
+  console.log(`   - Found ${assetIds.size} unique assets`)
   return assetIds
 }
 
@@ -363,9 +363,9 @@ async function main() {
     (a) => !a.type.startsWith("image/") && !a.type.startsWith("video/"),
   )
 
-  console.log(`   Images: ${images.length}`)
-  console.log(`   Videos: ${videos.length}`)
-  console.log(`   Others: ${others.length}`)
+  console.log(`   - Images: ${images.length}`)
+  console.log(`   - Videos: ${videos.length}`)
+  console.log(`   - Others: ${others.length}`)
 
   // Process assets
   console.log("\n⚙️ Processing assets...\n")

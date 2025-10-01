@@ -63,7 +63,11 @@ function getExtensionFromMimeType(mimeType: string): string {
   return mimeMap[mimeType] || ""
 }
 
-export function formatImageURL(id?: string | null, params?: string, type?: string | null) {
+export function formatImageURL(
+  id?: string | null,
+  params?: string,
+  type?: string | null,
+) {
   if (!id) return null
 
   if (import.meta.env.PROD) {
@@ -86,12 +90,15 @@ export function formatImageURL(id?: string | null, params?: string, type?: strin
 
 export function transformMediaInHTML(
   html?: string,
-  maxWidth: number = 700,
+  maxWidth: number = 800,
 ): string {
   if (!html) return ""
 
   const directusUrl = import.meta.env.DIRECTUS_URL
-  const assetPattern = new RegExp(`${directusUrl}/assets/([a-f0-9-]+)`, "g")
+  const assetPattern = new RegExp(
+    `${directusUrl}/assets/([a-f0-9-]+)(\\.\\w{3,4})?`,
+    "g",
+  )
 
   return html.replace(assetPattern, (match, assetId) => {
     // In production, use the actual file extensions from our download script
@@ -101,13 +108,13 @@ export function transformMediaInHTML(
       const before = html.substring(Math.max(0, indexInHtml - 100), indexInHtml)
 
       // Check if it's in a video tag -> .mp4 (ffmpeg output)
-      if (before.includes('<video') || before.includes('<source')) {
+      if (before.includes("<video") || before.includes("<source")) {
         return `/assets/${assetId}.mp4`
       }
       // Assume image -> .webp (Directus transformation output)
       return `/assets/${assetId}.webp`
     }
-    return `${directusUrl}/assets/${assetId}?width=${maxWidth}&quality=80&format=auto`
+    return match
   })
 }
 
@@ -221,7 +228,7 @@ export async function getPosts(
       const translations = getTranslations(p.translations, language)
       const title = translations?.title ?? ""
       const content = translations?.content ?? ""
-      const imageFile = typeof p.image === 'object' && p.image ? p.image : null
+      const imageFile = typeof p.image === "object" && p.image ? p.image : null
       return {
         id: p.id,
         title,
@@ -312,7 +319,12 @@ export function getPageBlockQuery() {
           {
             categories: [
               "*",
-              { categories_id: ["*", { translations: ["*"], background: ["*"] }] },
+              {
+                categories_id: [
+                  "*",
+                  { translations: ["*"], background: ["*"] },
+                ],
+              },
             ],
           },
         ],

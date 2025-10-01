@@ -28,7 +28,6 @@ export default function PostGrid({
   const differentCategories = useMemo(() => {
     const categories = _posts.map((p) => getCategories(p.id))
     const uniqueValues = [...new Set(categories)]
-    console.log(uniqueValues)
     return uniqueValues.length > 1
   }, [posts, category])
 
