@@ -100,7 +100,7 @@ export default function PostGrid({
           <div>
             <a
               onClick={beforeNavigation}
-              href={`/${language}/posts/${p.slug}`}
+              href={`/${language}/posts/${p.id}`}
               style={{
                 "--tw-shadow": "3px 3px 1px 0px var(--link-light)",
                 border: "1px solid var(--link-light)",

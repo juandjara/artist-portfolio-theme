@@ -1,41 +1,43 @@
 ---
-import type { GetStaticPathsResult } from "astro";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { formatImageURL } from "../../../lib/directus";
-import { getTranslations } from "../../../lib/directus";
-import { getAllPosts } from "../../../lib/directus";
-import { i18nConfig } from "../../../lib/i18n";
-import PostDetail from "../../../components/PostDetail.astro";
+import type { GetStaticPathsResult } from "astro"
+import BaseLayout from "../../../layouts/BaseLayout.astro"
+import { formatImageURL } from "../../../lib/directus"
+import { getTranslations } from "../../../lib/directus"
+import { getAllPosts } from "../../../lib/directus"
+import { i18nConfig } from "../../../lib/i18n"
+import PostDetail from "../../../components/PostDetail.astro"
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
-  return i18nConfig.locales.map((lang) => {
-    return posts.map((p) => {
-      const translations = getTranslations(p.translations, lang)
-      const title = translations?.title ?? ''
-      const content = translations?.content ?? ''
-      const description = translations?.description ?? ''
-      const imageFile = typeof p.image === 'object' && p.image ? p.image : null
-      const postProp = {
-        id: p.id,
-        title,
-        content,
-        description,
-        date: new Date(p.published_at ?? '').toLocaleDateString(),
-        image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
-        slug: p.slug!,
-      }
+  return i18nConfig.locales
+    .map((lang) => {
+      return posts.map((p) => {
+        const translations = getTranslations(p.translations, lang)
+        const title = translations?.title ?? ""
+        const content = translations?.content ?? ""
+        const description = translations?.description ?? ""
+        const imageFile =
+          typeof p.image === "object" && p.image ? p.image : null
+        const postProp = {
+          id: p.id,
+          title,
+          content,
+          description,
+          date: new Date(p.published_at ?? "").toLocaleDateString(),
+          image:
+            formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
+        }
 
-      return {
-        params: { lang, post: p.slug ?? p.id },
-        props: { post: postProp }
-      }
-    }) satisfies GetStaticPathsResult
-  }).flat()
+        return {
+          params: { lang, post: p.id },
+          props: { post: postProp },
+        }
+      }) satisfies GetStaticPathsResult
+    })
+    .flat()
 }
 
 const post = Astro.props.post
-
 ---
 
 <BaseLayout pageTitle={post.title} showTitle={false}>

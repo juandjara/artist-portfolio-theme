@@ -157,7 +157,7 @@ export function parseMenuItems(items: NavigationItems[], lang: string) {
         if (translations?.title) {
           title = translations?.title
         }
-        url = getRelativeLocaleUrl(lang, `/post/${post.slug}`, {
+        url = getRelativeLocaleUrl(lang, `/post/${post.id}`, {
           normalizeLocale: false,
         })
       }
@@ -234,7 +234,6 @@ export async function getPosts(
         title,
         content,
         image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
-        slug: p.slug,
       }
     }),
   }
@@ -249,10 +248,10 @@ export async function getAllPosts() {
   return allPosts
 }
 
-export async function getPost(slug: string) {
+export async function getPost(id: string) {
   const post = await directus.request(
     readItems("posts", {
-      filter: { slug: { _eq: slug } },
+      filter: { id: { _eq: id } },
       fields: ["*", { translations: ["*"], image: ["*"] }],
     }),
   )

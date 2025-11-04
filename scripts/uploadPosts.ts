@@ -155,7 +155,7 @@ async function main() {
         console.log(`✅ Thumbnail imported with id ${thumbnailId}`)
         const newPost = await directus.request(
           createItem("posts", {
-            slug: post.slug,
+            id: post.id,
             status: "published",
             protected: false,
             sort: data.indexOf(post),
