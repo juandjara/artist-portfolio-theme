@@ -53,10 +53,6 @@ if (category && !categories.includes(category)) {
 
 const { numProtected, posts } = _posts
 
-function isCatSelected(id: string) {
-  return id === (categoryId ?? 'all')
-}
-
 const _labels = await Promise.all([
   translateString('loading', language),
   translateString('reveal', language),
@@ -70,25 +66,6 @@ const labels = {
 }
 
 ---
-<div class="-mx-2 mt-4 pb-4 border-rose-800">
-  <ul class="mx-2 flex flex-wrap justify-center gap-3">
-    {categories.map((c) => (
-      <li>
-        <a
-          href={c.link}
-          class:list={[
-            {
-              'bg-[var(--panel-light)] dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
-              'hover:bg-[var(--panel-transparent-light)] dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? ''),
-              'opacity-50': c.status === 'protected'
-            },
-            'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
-          ]}
-        >{c.name}</a>
-      </li>
-    ))}
-  </ul>
-</div>
 <Blocks blocks={blocks} />
 <PostGrid
   client:load

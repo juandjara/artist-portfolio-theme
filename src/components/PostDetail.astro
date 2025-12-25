@@ -22,32 +22,26 @@ const content = transformMediaInHTML(post.content)
 const description = transformMediaInHTML(post.description)
 ---
 
-<div class="mx-auto mt-12">
+<div class="max-w-prose mx-auto mt-4">
   <a
     id="back-button"
-    class="my-2 inline-block text-lg font-medium"
+    class="my-2 inline-block text-lg font-medium hover:bg-gray-500/10 px-2 py-1 rounded-md"
     href={getRelativeLocaleUrl(lang, "/archive", { normalizeLocale: false })}
     >&#8672; Back</a
   >
-  <!-- <img class="shadow-md rounded-lg w-full mb-8" src={post.image} alt="" /> -->
-  <div class="flex flex-col gap-4 md:flex-row">
-    <div
-      class="prose mt-2 mb-6 flex-grow dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-xl prose-video:w-full"
-    >
-      <Fragment set:html={content} />
-    </div>
-    <aside class="max-w-[360px]">
-      <time class="mb-2 inline-block text-sm">{post.date}</time>
-      <h2 class="text-link mb-3 text-3xl font-medium">{post.title}</h2>
-      {
-        post.description ? (
-          <div class="prose mt-2 mb-6 dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-xl">
-            <Fragment set:html={description} />
-          </div>
-        ) : null
-      }
-    </aside>
+  <h2 class="text-link mb-8 text-3xl font-medium">{post.title}</h2>
+  <div
+    class="prose mt-2 mb-6 flex-grow dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-lg prose-video:w-full prose-video:my-2"
+  >
+    <Fragment set:html={content} />
   </div>
+  {
+    post.description ? (
+      <div class="prose mt-2 mb-6 dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-xl">
+        <Fragment set:html={description} />
+      </div>
+    ) : null
+  }
 </div>
 <script>
   const backButton = document.getElementById("back-button")

@@ -1,9 +1,7 @@
 ---
 import Hamburger from "./Hamburger.astro";
-import ThemeToggle from "./ThemeToggle.astro";
-import LanguageToggle from "./LanguageToggle.astro";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import { i18nConfig } from "../lib/i18n";
+import { getCategories } from "../lib/directus";
 
 interface Props {
   favicon: string;
@@ -12,17 +10,39 @@ interface Props {
   description: string;
 }
 
-const url = Astro.url.pathname;
-
-const items = Astro.props.menuItems.map((item) => ({
-  ...item,
-  selected: url === item.url
-}));
 const favicon = Astro.props.favicon;
 const title = Astro.props.title;
-const description = Astro.props.description;
+
+const localCategory = Astro.locals.previewCategory ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
-const homeLink = getRelativeLocaleUrl(language, '/', { normalizeLocale: false })
+let categoryId = localCategory ?? Astro.params.category ?? null
+
+const _categories = await getCategories(language)
+if (!categoryId) {
+  categoryId = _categories[0]?.permalink ?? null
+}
+
+const categories = _categories.filter((c) => c.status === 'visible')
+
+categories.push({
+  background: '',
+  id: 'all',
+  name: 'About me',
+  status: 'visible',
+  permalink: '',
+  postIds: [],
+  blocks: [],
+  link: `/${language}/about`,
+})
+
+const category = _categories.find((c) => c.permalink === categoryId)
+if (category && !categories.includes(category)) {
+  categories.push(category)
+}
+
+function isCatSelected(id: string) {
+  return id === (categoryId ?? 'all')
+}
 
 ---
 
@@ -48,20 +68,34 @@ const homeLink = getRelativeLocaleUrl(language, '/', { normalizeLocale: false })
         ))
       }
     </ul>
-    <Hamburger />
     <div class="md:hidden flex-grow" />
     <LanguageToggle />
     <ThemeToggle />
   </nav> -->
-  <div class="flex justify-center items-center md:items-end gap-3 pt-6 pb-4">
+  <div class="flex items-center gap-3 pb-4">
     <img
-      class="w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-gray-300"
+      class="w-20 h-20 rounded-full border-2 border-gray-300"
       src={favicon}
       alt="drawing of my face"
     />
-    <div>
-      <h1 class="text-link text-4xl md:text-6xl font-medium mb-1">{title}</h1>
-      <p class="text-lg md:text-2xl">{description}</p>
-    </div>
+    <h1 class="text-link text-4xl font-medium flex-grow">{title}</h1>
+    <Hamburger />
+    <ul class="mx-2 flex flex-wrap justify-center gap-3 flex-shrink-0">
+      {categories.map((c) => (
+        <li>
+          <a
+            href={c.link}
+            class:list={[
+              {
+                'bg-[var(--panel-light)] dark:bg-rose-900/50': isCatSelected(c.permalink ?? ''),
+                'hover:bg-[var(--panel-transparent-light)] dark:hover:bg-rose-100/20': !isCatSelected(c.permalink ?? ''),
+                'opacity-50': c.status === 'protected'
+              },
+              'px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
+            ]}
+          >{c.name}</a>
+        </li>
+      ))}
+    </ul>
   </div>
 </header>

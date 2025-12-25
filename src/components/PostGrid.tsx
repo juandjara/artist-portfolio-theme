@@ -94,7 +94,7 @@ export default function PostGrid({
         ) : null}
       </div>
       <div
-        className={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4`}
+        className={`my-3 grid grid-cols-2 flex-wrap gap-2 sm:grid-cols-3 md:grid-cols-4`}
       >
         {_posts.map((p) => (
           <div>
@@ -103,7 +103,6 @@ export default function PostGrid({
               href={`/${language}/posts/${p.id}`}
               style={{
                 "--tw-shadow": "3px 3px 1px 0px var(--link-light)",
-                border: "1px solid var(--link-light)",
               }}
               className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md transition-shadow hover:shadow-md dark:shadow-rose-200"
             >
@@ -117,12 +116,6 @@ export default function PostGrid({
                 />
               </div>
             </a>
-            {differentCategories ? (
-              <p className="text-link pt-2 text-sm font-medium">
-                {getCategories(p.id)}
-              </p>
-            ) : null}
-            {p.title ? <p className="pt-1 pb-1">{p.title}</p> : null}
           </div>
         ))}
       </div>
