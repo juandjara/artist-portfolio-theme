@@ -78,7 +78,10 @@ function isCatSelected(id: string) {
       src={favicon}
       alt="drawing of my face"
     />
-    <h1 class="text-link text-4xl font-medium flex-grow">{title}</h1>
+    <div class="flex-grow">
+      <h1 class="text-link text-4xl font-medium">{title}</h1>
+      <p>{category?.name}</p>
+    </div>
     <Hamburger />
     <ul id="nav-links" class="hidden absolute z-20 top-16 -right-2 mx-2 flex-shrink-0">
       {categories.map((c) => (
