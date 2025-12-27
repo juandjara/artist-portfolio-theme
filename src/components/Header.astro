@@ -83,22 +83,24 @@ function isCatSelected(id: string) {
       <p>{category?.name}</p>
     </div>
     <Hamburger />
-    <ul id="nav-links" class="hidden absolute z-20 top-16 -right-2 mx-2 flex-shrink-0">
-      {categories.map((c) => (
-        <li>
-          <a
-            href={c.link}
-            class:list={[
-              {
-                'bg-[var(--panel-light)]': isCatSelected(c.permalink ?? ''),
-                'bg-[var(--background-light)] hover:bg-[var(--panel-light)]': !isCatSelected(c.permalink ?? ''),
-                'opacity-50': c.status === 'protected'
-              },
-              'block my-1.5 px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
-            ]}
-          >{c.name}</a>
-        </li>
-      ))}
-    </ul>
+    <nav id="nav-links" class="hidden absolute z-20 top-16 -right-2">
+      <ul class="md:flex items-center gap-3 mx-2 flex-shrink-0">
+        {categories.map((c) => (
+          <li>
+            <a
+              href={c.link}
+              class:list={[
+                {
+                  'bg-[var(--panel-light)]': isCatSelected(c.permalink ?? ''),
+                  'bg-[var(--background-light)] hover:bg-[var(--panel-light)]': !isCatSelected(c.permalink ?? ''),
+                  'opacity-50': c.status === 'protected'
+                },
+                'block my-1.5 px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
+              ]}
+            >{c.name}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   </div>
 </header>
