@@ -91,7 +91,7 @@ function isCatSelected(id: string) {
             class:list={[
               {
                 'bg-[var(--panel-light)]': isCatSelected(c.permalink ?? ''),
-                'bg-[var(--background-light)] hover:bg-[var(--panel-transparent-light)]': !isCatSelected(c.permalink ?? ''),
+                'bg-[var(--background-light)] hover:bg-[var(--panel-light)]': !isCatSelected(c.permalink ?? ''),
                 'opacity-50': c.status === 'protected'
               },
               'block my-1.5 px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
