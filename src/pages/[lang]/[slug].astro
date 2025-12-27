@@ -61,5 +61,7 @@ const blocks = Astro.props.blocks.filter(
       onclick="window.history.back()"
     >&#8672; Back</button>
   </div>
-  <Blocks blocks={blocks} />
+  <div class="page-content">
+    <Blocks blocks={blocks} />
+  </div>
 </BaseLayout>
