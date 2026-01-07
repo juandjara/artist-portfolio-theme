@@ -16,6 +16,7 @@ const translations = getTranslations(block.translations, language)
 const title = translations?.title ?? ''
 const description = translations?.description ?? ''
 const layout = block.layout ?? 'centered'
+const size_style = block.image_size_style ?? '50%'
 
 ---
 
@@ -30,12 +31,13 @@ const layout = block.layout ?? 'centered'
     {description && <p class="hero__description">{description}</p>}
   </div>
 </div>
-<style>
+<style define:vars={{ size_style }}>
   .hero {
     text-align: center;
     display: flex;
     gap: 16px;
     flex-direction: column;
+    margin: 1rem 0;
   }
   .hero--image_left {
     flex-direction: row;
@@ -44,7 +46,9 @@ const layout = block.layout ?? 'centered'
     flex-direction: row-reverse;
   }
   .hero__image {
-    flex: 0 0 50%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: var(--size_style);
   }
   .hero__image img {
     max-width: 100%;
@@ -52,7 +56,8 @@ const layout = block.layout ?? 'centered'
   }
   .hero__content {
     text-align: left;
-    flex: 0 1 50%;
+    flex-shrink: 1;
+    flex-grow: 1;
   }
   .hero__title {
     font-size: 2rem;

@@ -64,6 +64,7 @@ export type BlockHeadingTranslations = {
 export type BlockHero = {
   id: string
   image?: string | DirectusFiles | null
+  image_size_style?: string | null
   layout?: string | null
   translations: UUID[] | BlockHeroTranslations[]
 }
