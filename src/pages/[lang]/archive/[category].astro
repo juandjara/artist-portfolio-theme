@@ -15,16 +15,13 @@ export async function getStaticPaths() {
     return categories.map((cat) => {
       return {
         params: { category: cat.permalink ?? '', lang },
+        props: { category: cat },
       }
     }) satisfies GetStaticPathsResult;
   }).flat()
 }
 
-const categoryId = Astro.params.category ?? null;
-const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
-
-const categories = await getCategories(language)
-const category = categories.find((c) => c.permalink === categoryId)
+const category = Astro.props.category;
 const title = category?.name ?? '';
 const blocks = category?.blocks.filter(
   (b) => b && typeof b !== "string",
