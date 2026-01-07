@@ -66,7 +66,7 @@ function isCatSelected(id: string) {
       <p>{category?.name}</p>
     </div>
     <Hamburger />
-    <nav id="nav-links" class="hidden absolute z-20 top-16 -right-2">
+    <nav id="nav-links" class="is-hidden transition-opacity absolute z-20 top-16 -right-2">
       <ul class="md:flex items-center gap-3 mx-2 flex-shrink-0">
         {categories.map((c) => (
           <li>
@@ -92,3 +92,9 @@ function isCatSelected(id: string) {
     </nav>
   </div>
 </header>
+<style>
+  #nav-links.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
