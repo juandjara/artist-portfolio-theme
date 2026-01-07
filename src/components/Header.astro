@@ -1,7 +1,7 @@
 ---
 import Hamburger from "./Hamburger.astro";
 import { i18nConfig } from "../lib/i18n";
-import { getCategories } from "../lib/directus";
+import { getCategories, getPost } from "../lib/directus";
 
 interface Props {
   favicon: string;
@@ -19,7 +19,13 @@ let categoryId = localCategory ?? Astro.params.category ?? null
 
 const _categories = await getCategories(language)
 if (!categoryId) {
-  categoryId = _categories[0]?.permalink ?? null
+  const postId = Astro.params.post ?? null
+  if (postId) {
+    const category = _categories.find((c) => (c.postIds ?? []).includes(postId))
+    categoryId = category?.permalink ?? null
+  } else {
+    categoryId = _categories[0]?.permalink ?? null
+  }
 }
 
 const categories = _categories.filter((c) => c.status === 'visible')
