@@ -33,6 +33,10 @@ html.dark {
   color: var(--text-dark);
 }
 
+button {
+  cursor: pointer;
+}
+
 .bg-primary {
   background-color: var(--panel-light);
 }

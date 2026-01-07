@@ -40,6 +40,6 @@ export async function getStaticPaths() {
 const post = Astro.props.post
 ---
 
-<BaseLayout pageTitle={post.title} showTitle={false}>
+<BaseLayout pageTitle={post.title}>
   <PostDetail post={post} />
 </BaseLayout>

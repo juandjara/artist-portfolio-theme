@@ -14,10 +14,9 @@ import { i18nConfig } from "../lib/i18n";
 
 interface Props {
   pageTitle?: string
-  showTitle?: boolean
 }
 
-const { pageTitle, showTitle = true } = Astro.props;
+const pageTitle = Astro.props.pageTitle;
 
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 const menus = await directus.request(
@@ -71,9 +70,6 @@ const favicon = formatImageURL(faviconFile?.id, undefined, faviconFile?.type) ??
       title={translations?.title ?? ""}
       description={description}
     />
-    {pageTitle && showTitle ? (
-      <h2 class="text-link mt-8 text-3xl max-w-prose mx-auto">{pageTitle}</h2>
-    ) : null}
     <main class="flex-grow">
       <slot />
     </main>

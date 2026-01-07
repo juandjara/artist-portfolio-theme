@@ -70,7 +70,7 @@ export default function PostGrid({
               <button
                 disabled={status === "loading"}
                 onClick={revealHiddenPosts}
-                className="text-link cursor-pointer"
+                className="text-link"
               >
                 {status === "loading" ? labels.loading : labels.reveal}
               </button>

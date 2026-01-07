@@ -25,14 +25,13 @@ const layout = block.layout ?? 'centered'
       <img src={imageURL} alt={imageFile?.description ?? title} />
     </div>
   }
-  <div class="hero__content">
+  <div class="hero__content max-w-prose mx-auto">
     {title && <h2 class="hero__title">{title}</h2>}
     {description && <p class="hero__description">{description}</p>}
   </div>
 </div>
 <style>
   .hero {
-    padding: 2rem;
     text-align: center;
     display: flex;
     gap: 16px;

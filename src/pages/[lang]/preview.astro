@@ -28,8 +28,8 @@ if (previewToken !== token) {
 }
 
 let title = ""
+let showTitle = true
 let blocks = [] as PageBlocks[]
-let showTitle = "yes"
 let postDetail = null as PostDetailType | null
 
 if (id) {
@@ -39,7 +39,9 @@ if (id) {
     if (id !== "/") {
       title = translations?.title ?? ""
     }
-    showTitle = page.show_title ?? "yes"
+    if (page.show_title === 'no') {
+      showTitle = false
+    }
     blocks = page.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
   }
   if (type === "category") {
@@ -48,7 +50,6 @@ if (id) {
     const category = categories.find((cat) => cat.id === id)
     if (category) {
       title = category.name ?? ''
-      showTitle = "no"
       blocks = category.blocks.filter(b => b && typeof b !== "string") as PageBlocks[]
     }
   }
@@ -72,10 +73,15 @@ if (id) {
 }
 ---
 
-<BaseLayout showTitle={showTitle === "yes"} pageTitle={title}>
+<BaseLayout pageTitle={title}>
   <div class="fixed top-0 right-0">
     <p class="bg-white px-2 py-1 text-sm font-bold text-white">Preview</p>
   </div>
+  {showTitle && !!title && (
+    <div class="max-w-prose mx-auto">
+      <h2 class="text-link text-3xl">{title}</h2>
+    </div>
+  )}
   {
     type === "post" ? (
       postDetail ? (
