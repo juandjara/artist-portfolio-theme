@@ -260,6 +260,23 @@ export async function getPost(id: string) {
   return post[0]
 }
 
+export const commonBlocksQuery = [
+  "*",
+  {
+    item: {
+      block_posts: ["*"],
+      block_embed: ["*"],
+      block_hero: ["*", { image: ["*"], translations: ["*"] }],
+      block_richtext: [
+        "*",
+        {
+          translations: ["*"],
+        },
+      ],
+    },
+  },
+] as const
+
 export async function getCategories(language: string) {
   const rows = await directus.request(
     readItems("categories", {
@@ -268,21 +285,7 @@ export async function getCategories(language: string) {
         {
           translations: ["*"],
           posts: ["*"],
-          blocks: [
-            "*",
-            {
-              item: {
-                block_embed: ["*"],
-                block_gallery: ["*"],
-                block_richtext: [
-                  "*",
-                  {
-                    translations: ["*"],
-                  },
-                ],
-              },
-            },
-          ],
+          blocks: commonBlocksQuery,
         },
       ],
     }),
@@ -309,36 +312,6 @@ export async function getCategories(language: string) {
   })
 }
 
-export function getPageBlockQuery() {
-  return [
-    "*",
-    {
-      item: {
-        block_posts: ["*"],
-        block_categories: [
-          "*",
-          {
-            categories: [
-              "*",
-              {
-                categories_id: [
-                  "*",
-                  { translations: ["*"], background: ["*"] },
-                ],
-              },
-            ],
-          },
-        ],
-        block_form: ["*"],
-        block_gallery: ["*"],
-        block_heading: ["*", { translations: ["*"] }],
-        block_hero: ["*", { image: ["*"], translations: ["*"] }],
-        block_richtext: ["*", { translations: ["*"] }],
-      },
-    },
-  ] as const
-}
-
 export async function getPage(link: string) {
   const pages = await directus.request(
     readItems("pages", {
@@ -351,7 +324,7 @@ export async function getPage(link: string) {
         "*",
         { translations: ["*"] },
         {
-          blocks: getPageBlockQuery(),
+          blocks: commonBlocksQuery,
         },
       ],
       limit: 1,

@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPathsOptions, GetStaticPathsResult } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import directus, { getTranslations, getPageBlockQuery } from "../../lib/directus";
+import directus, { getTranslations, commonBlocksQuery } from "../../lib/directus";
 import { readItems } from "@directus/sdk";
 import type { PageBlocks } from "../../lib/directus.types";
 import Blocks from "../../components/Blocks.astro";
@@ -18,7 +18,7 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
       fields: [
         "*",
         { translations: ["*"] },
-        { blocks: getPageBlockQuery() },
+        { blocks: commonBlocksQuery },
       ],
     }),
   );

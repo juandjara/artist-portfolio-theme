@@ -99,6 +99,32 @@ export type BlockEmbed = {
   embed_code?: string | null
 }
 
+export type BlockColumnGroup = {
+  id: string
+  sort?: number | null
+  columns: UUID[] | BlockColumns[]
+}
+
+export type BlockColumns = {
+  id: string
+  sort?: number | null
+  size?: string | null
+  blocks: UUID[] | BlockColumnsBlocks[]
+}
+
+export type BlockColumnsBlocks = {
+  id: string
+  item?: string | BlockColumnsBlockItem | null
+  collection?: string | null
+  block_column_id?: string | BlockColumns | null
+}
+
+export type BlockColumnsBlockItem =
+  | BlockRichtext
+  | BlockEmbed
+  | BlockHero
+  | BlockColumnGroup
+
 export type Category = {
   id: string
   background?: string | DirectusFiles | null
@@ -118,7 +144,11 @@ export type CategoriesBlocks = {
   categories_id?: string | Category | null
 }
 
-export type CategoryBlockItem = BlockRichtext | BlockGallery | BlockEmbed
+export type CategoryBlockItem =
+  | BlockRichtext
+  | BlockEmbed
+  | BlockHero
+  | BlockColumnGroup
 
 export type CategoriesFiles = {
   categories_id?: string | null
@@ -654,13 +684,11 @@ export type PageBlocks = {
 }
 
 export type PageBlockItem =
-  | BlockRichtext
-  | BlockCategories
-  | BlockPosts
-  | BlockForm
-  | BlockGallery
-  | BlockHeading
   | BlockHero
+  | BlockPosts
+  | BlockRichtext
+  | BlockEmbed
+  | BlockColumnGroup
 
 export type Pages = {
   blocks: UUID[] | PageBlocks[]
@@ -744,6 +772,9 @@ export type DBSchema = {
   block_richtext: BlockRichtext[]
   block_richtext_translations: BlockRichtextTranslations[]
   block_embed: BlockEmbed[]
+  block_column_group: BlockColumnGroup[]
+  block_columns: BlockColumns[]
+  block_columns_blocks: BlockColumnsBlocks[]
   /** System collections */
   directus_access: DirectusAccess[]
   directus_activity: DirectusActivity[]
