@@ -19,7 +19,7 @@ const layout = block.layout ?? 'centered'
 
 ---
 
-<section class={`hero hero--${layout}`}>
+<div class={`hero hero--${layout}`}>
   {imageURL && 
     <div class="hero__image">
       <img src={imageURL} alt={imageFile?.description ?? title} />
@@ -29,24 +29,23 @@ const layout = block.layout ?? 'centered'
     {title && <h2 class="hero__title">{title}</h2>}
     {description && <p class="hero__description">{description}</p>}
   </div>
-</section>
+</div>
 <style>
   .hero {
     padding: 2rem;
     text-align: center;
-  }
-  .hero--image_left {
     display: flex;
     gap: 16px;
+    flex-direction: column;
+  }
+  .hero--image_left {
     flex-direction: row;
   }
   .hero--image_right {
-    display: flex;
-    gap: 16px;
     flex-direction: row-reverse;
   }
   .hero__image {
-    flex-shrink: 0;
+    flex: 0 0 50%;
   }
   .hero__image img {
     max-width: 100%;
@@ -54,6 +53,7 @@ const layout = block.layout ?? 'centered'
   }
   .hero__content {
     text-align: left;
+    flex: 0 1 50%;
   }
   .hero__title {
     font-size: 2rem;
