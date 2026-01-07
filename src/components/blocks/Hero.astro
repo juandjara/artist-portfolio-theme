@@ -17,6 +17,7 @@ const title = translations?.title ?? ''
 const description = translations?.description ?? ''
 const layout = block.layout ?? 'centered'
 const size_style = block.image_size_style ?? '50%'
+const showContent = !!title || !!description
 
 ---
 
@@ -26,15 +27,18 @@ const size_style = block.image_size_style ?? '50%'
       <img src={imageURL} alt={imageFile?.description ?? title} />
     </div>
   }
-  <div class="hero__content max-w-prose mx-auto">
-    {title && <h2 class="hero__title">{title}</h2>}
-    {description && <p class="hero__description">{description}</p>}
-  </div>
+  {showContent && (
+    <div class="hero__content max-w-prose">
+      {title && <h2 class="hero__title">{title}</h2>}
+      {description && <p class="hero__description">{description}</p>}
+    </div>
+  )}
 </div>
 <style define:vars={{ size_style }}>
   .hero {
     text-align: center;
     display: flex;
+    justify-content: center;
     gap: 16px;
     flex-direction: column;
     margin: 1rem 0;
@@ -48,9 +52,12 @@ const size_style = block.image_size_style ?? '50%'
   .hero__image {
     flex-shrink: 0;
     flex-grow: 0;
-    margin: 0 auto;
     width: var(--size_style);
   }
+  .hero--centered .hero__image {
+    margin: 0 auto;
+  }
+
   .hero__image img {
     max-width: 100%;
     height: auto;
@@ -59,6 +66,9 @@ const size_style = block.image_size_style ?? '50%'
     text-align: left;
     flex-shrink: 1;
     flex-grow: 1;
+  }
+  .hero--centered .hero__content {
+    margin: 0 auto;
   }
   .hero__title {
     font-size: 2rem;
