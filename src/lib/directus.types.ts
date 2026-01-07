@@ -62,7 +62,6 @@ export type BlockHeadingTranslations = {
 }
 
 export type BlockHero = {
-  button_group?: string | BlockButtonGroup | null
   id: string
   image?: string | DirectusFiles | null
   layout?: string | null
@@ -738,11 +737,6 @@ export type DBSchema = {
   block_button_group: BlockButtonGroup[]
   block_categories: BlockCategories[]
   block_categories_categories: BlockCategoriesCategories[]
-  block_form: BlockForm[]
-  block_gallery: BlockGallery[]
-  block_gallery_items: BlockGalleryItems[]
-  block_heading: BlockHeading[]
-  block_heading_translations: BlockHeadingTranslations[]
   block_hero: BlockHero[]
   block_hero_translations: BlockHeroTranslations[]
   block_posts: BlockPosts[]
