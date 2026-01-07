@@ -30,22 +30,17 @@ if (previewToken !== token) {
 let title = ""
 let blocks = [] as PageBlocks[]
 let showTitle = "yes"
-
-async function fetchPage(slug: string) {
-  const page = await getPage(slug!)
-  const translations = getTranslations(page.translations, lang)
-  if (slug !== "/") {
-    title = translations?.title ?? ""
-  }
-  showTitle = page.show_title ?? "yes"
-  blocks = page.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
-}
-
 let postDetail = null as PostDetailType | null
 
 if (id) {
   if (type === "page") {
-    await fetchPage(id)
+    const page = await getPage(id!)
+    const translations = getTranslations(page.translations, lang)
+    if (id !== "/") {
+      title = translations?.title ?? ""
+    }
+    showTitle = page.show_title ?? "yes"
+    blocks = page.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
   }
   if (type === "category") {
     Astro.locals.previewCategory = id
