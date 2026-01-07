@@ -1,0 +1,65 @@
+---
+import { formatImageURL, getTranslations } from '../../lib/directus'
+import type { BlockHero } from '../../lib/directus.types'
+import { i18nConfig } from '../../lib/i18n';
+
+interface Props {
+  block: BlockHero
+}
+
+const block = Astro.props.block
+const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+
+const imageFile = typeof block.image === "object" && block.image ? block.image : null
+const imageURL = formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? ""
+const translations = getTranslations(block.translations, language)
+const title = translations?.title ?? ''
+const description = translations?.description ?? ''
+const layout = block.layout ?? 'centered'
+
+---
+
+<section class={`hero hero--${layout}`}>
+  {imageURL && 
+    <div class="hero__image">
+      <img src={imageURL} alt={imageFile?.description ?? title} />
+    </div>
+  }
+  <div class="hero__content">
+    {title && <h2 class="hero__title">{title}</h2>}
+    {description && <p class="hero__description">{description}</p>}
+  </div>
+</section>
+<style>
+  .hero {
+    padding: 2rem;
+    text-align: center;
+  }
+  .hero--image_left {
+    display: flex;
+    gap: 16px;
+    flex-direction: row;
+  }
+  .hero--image_right {
+    display: flex;
+    gap: 16px;
+    flex-direction: row-reverse;
+  }
+  .hero__image {
+    flex-shrink: 0;
+  }
+  .hero__image img {
+    max-width: 100%;
+    height: auto;
+  }
+  .hero__content {
+    text-align: left;
+  }
+  .hero__title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  .hero__description {
+    font-size: 1.25rem;
+  }
+</style>

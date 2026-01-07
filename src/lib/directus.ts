@@ -332,7 +332,7 @@ export function getPageBlockQuery() {
         block_form: ["*"],
         block_gallery: ["*"],
         block_heading: ["*", { translations: ["*"] }],
-        block_hero: ["*", { translations: ["*"] }],
+        block_hero: ["*", { image: ["*"], translations: ["*"] }],
         block_richtext: ["*", { translations: ["*"] }],
       },
     },
