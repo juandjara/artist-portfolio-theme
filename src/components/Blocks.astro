@@ -1,7 +1,6 @@
 ---
 import type { PageBlockItem, PageBlocks } from "../lib/directus.types";
 import Embed from "./blocks/Embed.astro";
-import Heading from "./blocks/Heading.astro";
 import Posts from "./blocks/Posts.astro";
 import RichText from "./blocks/RichText.astro";
 
@@ -19,7 +18,6 @@ const blocks = (Astro.props.blocks ?? [])
     blocks.map((b) => {
       const componentMap = {
         block_richtext: RichText,
-        block_heading: Heading,
         block_posts: Posts,
         block_embed: Embed,
       };
