@@ -1,55 +1,18 @@
 ---
 import { getCategories, getPosts, translateString } from "../../lib/directus"
-import type { PageBlocks } from "../../lib/directus.types"
 import { i18nConfig } from "../../lib/i18n"
-import Blocks from "../Blocks.astro"
 import PostGrid from '../PostGrid'
 
 const localCategory = Astro.locals.previewCategory ?? null
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 let categoryId = localCategory ?? Astro.params.category ?? null
 
-const _categories = await getCategories(language)
 if (!categoryId) {
+  const _categories = await getCategories(language)
   categoryId = _categories[0]?.permalink ?? null
 }
 
 const _posts = await getPosts(categoryId, language)
-
-const categories = _categories.filter((c) => c.status === 'visible')
-
-const _postCategoryMap = {} as Record<string, Set<string>>
-for (const cat of categories) {
-  for (const id of (cat.postIds ?? [])) {
-    _postCategoryMap[id] = _postCategoryMap[id] || new Set()
-    if (cat.name) {
-      _postCategoryMap[id].add(cat.name)
-    }
-  }
-}
-const postCategoryMap = Object.fromEntries(
-  Object.entries(_postCategoryMap).map(([key, value]) => [key, Array.from(value)])
-)
-
-const category = _categories.find((c) => c.permalink === categoryId)
-const blocks = category?.blocks.filter(
-  (b) => b && typeof b !== "string",
-) as PageBlocks[] ?? []
-
-categories.push({
-  background: '',
-  id: 'all',
-  name: 'About me',
-  status: 'visible',
-  permalink: '',
-  postIds: [],
-  blocks: [],
-  link: `/${language}/about`,
-})
-
-if (category && !categories.includes(category)) {
-  categories.push(category)
-}
 
 const { numProtected, posts } = _posts
 
@@ -66,7 +29,6 @@ const labels = {
 }
 
 ---
-<Blocks blocks={blocks} />
 <PostGrid
   client:load
   labels={labels}
@@ -74,5 +36,4 @@ const labels = {
   numProtected={numProtected}
   category={categoryId ?? ''}
   language={language}
-  postCategoryMap={postCategoryMap}
 />

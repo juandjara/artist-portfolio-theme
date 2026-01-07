@@ -1,4 +1,4 @@
-import { useMemo, useState } from "preact/hooks"
+import { useState } from "preact/hooks"
 import type { getPosts } from "../lib/directus"
 import { actions } from "astro:actions"
 
@@ -9,12 +9,10 @@ export default function PostGrid({
   numProtected,
   category,
   language,
-  postCategoryMap,
   labels,
 }: PostProps & {
   category: string
   language: string
-  postCategoryMap: Record<string, string[]>
   labels: {
     loading: string
     reveal: string
@@ -24,19 +22,6 @@ export default function PostGrid({
   const [_numProtected, setNumProtected] = useState(numProtected)
   const [_posts, setPosts] = useState(posts)
   const [status, setStatus] = useState("hidden")
-
-  const differentCategories = useMemo(() => {
-    const categories = _posts.map((p) => getCategories(p.id))
-    const uniqueValues = [...new Set(categories)]
-    return uniqueValues.length > 1
-  }, [posts, category])
-
-  function getCategories(id: string) {
-    if (!postCategoryMap[id]) {
-      return ""
-    }
-    return postCategoryMap[id].join(", ")
-  }
 
   async function revealHiddenPosts() {
     const password = window.prompt("Enter password")
@@ -94,7 +79,7 @@ export default function PostGrid({
         ) : null}
       </div>
       <div
-        className={`my-3 grid grid-cols-2 flex-wrap gap-2 sm:grid-cols-3 md:grid-cols-4`}
+        className={`my-3 grid grid-cols-2 flex-wrap gap-3 sm:grid-cols-3 md:grid-cols-4`}
       >
         {_posts.map((p) => (
           <div>
@@ -116,6 +101,10 @@ export default function PostGrid({
                 />
               </div>
             </a>
+            {p.title && <p class="text-link pt-1 text-base">{p.title}</p>}
+            {p.subtitle && (
+              <p class="text-primary pb-1 text-sm">{p.subtitle}</p>
+            )}
           </div>
         ))}
       </div>

@@ -1,25 +1,10 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import directus, { getPage, getTranslations } from "../../lib/directus";
-import { readItems } from "@directus/sdk";
-import type { PageBlocks } from "../../lib/directus.types";
-import Blocks from "../../components/Blocks.astro";
 import { i18nConfig } from "../../lib/i18n";
 
 export function getStaticPaths() {
   return i18nConfig.locales.map((lang) => ({ params: { lang } }));
 }
 
-const page = await getPage('/')
-
-// const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
-// const translation = getTranslations(page?.translations, language);
-// const title = translation?.title ?? "";
-// const description = translation?.description ?? ''
-const blocks = page?.blocks as PageBlocks[];
+const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
+return Astro.redirect(`/${language}/archive/`);
 ---
-
-<BaseLayout>
-  <!-- <h2>{description}</h2> -->
-  <Blocks blocks={blocks} />
-</BaseLayout>

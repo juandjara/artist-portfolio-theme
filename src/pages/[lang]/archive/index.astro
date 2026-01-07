@@ -1,7 +1,7 @@
 ---
 import Blocks from "../../../components/Blocks.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro"
-import { getPage, getTranslations } from "../../../lib/directus";
+import { getPage } from "../../../lib/directus";
 import type { PageBlocks } from "../../../lib/directus.types";
 import { i18nConfig } from "../../../lib/i18n";
 
@@ -10,14 +10,9 @@ export function getStaticPaths() {
 }
 
 const page = await getPage('/')
-const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
-const translation = getTranslations(page?.translations, language);
-const title = translation?.title ?? "";
-const blocks = page?.blocks as PageBlocks[];
-const showTitle = page?.show_title ?? "yes";
+const blocks = page.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
 
 ---
-
-<BaseLayout showTitle={showTitle === "yes"} pageTitle={title}>
+<BaseLayout>
   <Blocks blocks={blocks} />
 </BaseLayout>

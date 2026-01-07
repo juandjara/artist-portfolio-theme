@@ -2,12 +2,14 @@
 
 ---
 
-<div class="flex items-center gap-2">
-  <p class="text-sm">Menu</p>
-  <button aria-label="toggle menu" id="menu-button" class="block">
-    <span class="menu-button-line"></span>
-    <span class="menu-button-line"></span>
-    <span class="menu-button-line"></span>
+<div>
+  <button id="menu-button" class="flex items-center gap-1 cursor-pointer group">
+    <p class="text-sm">Menu</p>
+    <div class="p-2 group-hover:bg-gray-200 transition-colors rounded-lg">
+      <span class="menu-button-line"></span>
+      <span class="menu-button-line"></span>
+      <span class="menu-button-line"></span>
+    </div>
   </button>
   <script is:inline>
     document.querySelector("#menu-button").addEventListener("click", () => {

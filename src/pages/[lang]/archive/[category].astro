@@ -1,10 +1,11 @@
 ---
 import type { GetStaticPathsResult } from "astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { getCategories, getPage, getTranslations } from "../../../lib/directus";
+import { getCategories } from "../../../lib/directus";
 import { i18nConfig } from "../../../lib/i18n";
 import type { PageBlocks } from "../../../lib/directus.types";
 import Blocks from "../../../components/Blocks.astro";
+import Posts from '../../../components/blocks/Posts.astro';
 
 export async function getStaticPaths() {
   const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
@@ -19,15 +20,19 @@ export async function getStaticPaths() {
   }).flat()
 }
 
-const page = await getPage('/')
+const categoryId = Astro.params.category ?? null;
 const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
-const translation = getTranslations(page?.translations, language);
-const title = translation?.title ?? "";
-const showTitle = page?.show_title ?? "yes";
-const blocks = page?.blocks as PageBlocks[];
+
+const categories = await getCategories(language)
+const category = categories.find((c) => c.permalink === categoryId)
+const title = category?.name ?? '';
+const blocks = category?.blocks.filter(
+  (b) => b && typeof b !== "string",
+) as PageBlocks[] ?? []
 
 ---
 
-<BaseLayout showTitle={showTitle === "yes"} pageTitle={title}>
+<BaseLayout showTitle={false} pageTitle={title}>
   <Blocks blocks={blocks} />
+  <Posts />  
 </BaseLayout>

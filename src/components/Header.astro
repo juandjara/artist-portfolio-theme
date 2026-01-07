@@ -47,37 +47,14 @@ function isCatSelected(id: string) {
 ---
 
 <header class="relative z-20">
-  <!-- <nav class="flex flex-wrap justify-end items-center">
-    <ul
-      id="nav-links"
-      class="md:order-0 order-10 md:w-auto w-full py-3 hidden md:flex items-center gap-1 flex-grow justify-end"
-    >
-      {
-        items.map(({ url, title, selected }) => (
-          <li>
-            <a
-              href={url}
-              class:list={[
-                { 'underline': selected },
-                'uppercase block text-xl md:px-3 py-1.5 font-semibold rounded-lg'
-              ]}
-            >
-              {title}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <div class="md:hidden flex-grow" />
-    <LanguageToggle />
-    <ThemeToggle />
-  </nav> -->
   <div class="flex items-center gap-3 pb-4">
-    <img
-      class="w-20 h-20 rounded-full border-2 border-gray-300"
-      src={favicon}
-      alt="drawing of my face"
-    />
+    <a href="/">
+      <img
+        class="w-20 h-20 rounded-full border-2 border-gray-300"
+        src={favicon}
+        alt="drawing of my face"
+      />
+    </a>
     <div class="flex-grow">
       <h1 class="text-link text-4xl font-medium">{title}</h1>
       <p>{category?.name}</p>
@@ -101,6 +78,11 @@ function isCatSelected(id: string) {
           </li>
         ))}
       </ul>
+      <!--
+        <div class="md:hidden flex-grow" />
+        <LanguageToggle />
+        <ThemeToggle />
+      -->
     </nav>
   </div>
 </header>

@@ -709,6 +709,7 @@ export type PostsTranslations = {
   languages_code?: string | Languages | null
   posts_id?: string | Posts | null
   title?: string | null
+  subtitle?: string | null
 }
 
 export type DBSchema = {

@@ -227,11 +227,13 @@ export async function getPosts(
     posts: rows.map((p) => {
       const translations = getTranslations(p.translations, language)
       const title = translations?.title ?? ""
+      const subtitle = translations?.subtitle ?? ""
       const content = translations?.content ?? ""
       const imageFile = typeof p.image === "object" && p.image ? p.image : null
       return {
         id: p.id,
         title,
+        subtitle,
         content,
         image: formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? "",
       }
