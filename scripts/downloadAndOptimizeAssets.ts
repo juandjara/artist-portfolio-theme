@@ -452,7 +452,10 @@ async function main() {
     }
 
     // Extract ID from filename (remove extension)
-    const fileId = path.parse(file).name
+    let fileId = path.parse(file).name
+    if (fileId.endsWith("_original")) {
+      fileId = fileId.replace("_original", "")
+    }
 
     // Remove file if its ID is not in validIds
     if (!validIds.has(fileId)) {
