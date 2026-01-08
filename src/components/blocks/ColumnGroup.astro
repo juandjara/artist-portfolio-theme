@@ -11,8 +11,6 @@ const blocks = block.blocks?.filter(
   (b) => typeof b !== "number" && !!b,
 ) ?? []
 
-console.log('ColumnGroup blocks:', JSON.stringify(blocks, null, 2))
-
 ---
 
 <Blocks blocks={blocks} />
