@@ -51,6 +51,7 @@ interface AssetInfo {
   filesize: number
   filename: string
   url: string
+  originalUrl?: string
   isImage: boolean
 }
 
@@ -136,12 +137,20 @@ async function processAsset(
     ext = path.extname(asset.filename) || ""
   }
   const finalPath = path.join(PUBLIC_ASSETS_DIR, `${asset.id}${ext}`)
+  const finalPathOriginal = path.join(
+    PUBLIC_ASSETS_DIR,
+    `${asset.id}_original${ext}`,
+  )
 
   // For images, download with Directus transformations applied
   // For videos, download to temp and optimize with ffmpeg
   if (asset.isImage) {
-    // Download already-transformed image directly
+    // Download image directly from directus transformation URL
     await downloadFile(asset.url, finalPath)
+    if (asset.originalUrl) {
+      // save original image as well for lightbox details
+      await downloadFile(asset.originalUrl, finalPathOriginal)
+    }
     const processedSize = fs.statSync(finalPath).size
 
     // Update cache
@@ -365,6 +374,9 @@ async function main() {
       type: file.type || "application/octet-stream",
       filesize: file.filesize || 0,
       filename: file.filename_download,
+      originalUrl: isImage
+        ? `${process.env.DIRECTUS_URL}/assets/${file.id}?format=webp`
+        : undefined,
       url,
       isImage,
     }
