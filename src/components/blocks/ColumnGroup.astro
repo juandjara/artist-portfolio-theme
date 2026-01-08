@@ -1,0 +1,25 @@
+---
+import type { BlockColumns } from '../../lib/directus.types'
+import Blocks from '../Blocks.astro'
+
+interface Props {
+  block: BlockColumns
+}
+
+const block = Astro.props.block
+const blocks = block.blocks?.filter(
+  (b) => typeof b !== "number" && !!b,
+) ?? []
+
+console.log('ColumnGroup blocks:', JSON.stringify(blocks, null, 2))
+
+---
+
+<Blocks blocks={blocks} />
+<div class="column-tree flex">
+  {block.column_tree.filter(col => typeof col !== 'number' && !!col).map((col) => (
+    <div class="column" style={`flex: ${col.size ?? 1}`}>
+      <Astro.self block={col} />
+    </div>
+  ))}
+</div>

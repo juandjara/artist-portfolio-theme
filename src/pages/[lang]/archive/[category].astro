@@ -3,7 +3,7 @@ import type { GetStaticPathsResult } from "astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { getCategories } from "../../../lib/directus";
 import { i18nConfig } from "../../../lib/i18n";
-import type { PageBlocks } from "../../../lib/directus.types";
+import type { CategoriesBlocks, PageBlocks } from "../../../lib/directus.types";
 import Blocks from "../../../components/Blocks.astro";
 import Posts from '../../../components/blocks/Posts.astro';
 
@@ -24,8 +24,8 @@ export async function getStaticPaths() {
 const category = Astro.props.category;
 const title = category?.name ?? '';
 const blocks = category?.blocks.filter(
-  (b) => b && typeof b !== "string",
-) as PageBlocks[] ?? []
+  (b) => typeof b !== "string" && !!b,
+) ?? []
 
 ---
 

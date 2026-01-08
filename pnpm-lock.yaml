@@ -18,14 +18,14 @@ importers:
         specifier: ^4.0.11
         version: 4.0.11
       '@directus/sdk':
-        specifier: ^19.1.0
-        version: 19.1.0
+        specifier: ^20.3.0
+        version: 20.3.0
       '@fontsource-variable/space-grotesk':
         specifier: ^5.2.6
         version: 5.2.6
       '@tailwindcss/vite':
         specifier: ^4.0.17
-        version: 4.0.17(vite@6.2.3(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6))
+        version: 4.0.17(vite@6.2.6(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6))
       astro:
         specifier: ^5.7.0
         version: 5.7.0(@netlify/blobs@8.1.2)(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.37.0)(tsx@4.20.6)(typescript@5.8.2)
@@ -284,8 +284,8 @@ packages:
   '@capsizecss/unpack@2.4.0':
     resolution: {integrity: sha512-GrSU71meACqcmIUxPYOJvGKF0yryjN/L1aCuE9DViCTJI7bfkjgYDPD1zbNDcINJwSSP6UaBZY9GAbYDO7re0Q==}
 
-  '@directus/sdk@19.1.0':
-    resolution: {integrity: sha512-Nqem9BsvvGyVtAa69mGPtoMoMVkZxdIREdsWvvTzNF4/1XqaFfEiFL7PhtUNfc46/Nufus2+QUKYQbNiAWe3ZA==}
+  '@directus/sdk@20.3.0':
+    resolution: {integrity: sha512-auy59B0A7Ri+4JDy0JcdFHnsHvOkl3ixWMWYciXAbm4oYIE9S4be8xEpIwA5qhlPTOprJ6JHPWo9rEvcrLwNtA==}
     engines: {node: '>=22'}
 
   '@emnapi/runtime@1.3.1':
@@ -3155,7 +3155,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@directus/sdk@19.1.0': {}
+  '@directus/sdk@20.3.0': {}
 
   '@emnapi/runtime@1.3.1':
     dependencies:
@@ -3712,13 +3712,13 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.0.17
 
-  '@tailwindcss/vite@4.0.17(vite@6.2.3(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6))':
+  '@tailwindcss/vite@4.0.17(vite@6.2.6(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6))':
     dependencies:
       '@tailwindcss/node': 4.0.17
       '@tailwindcss/oxide': 4.0.17
       lightningcss: 1.29.2
       tailwindcss: 4.0.17
-      vite: 6.2.3(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6)
+      vite: 6.2.6(@types/node@22.13.16)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.20.6)
 
   '@trysound/sax@0.2.0': {}
 

@@ -99,17 +99,12 @@ export type BlockEmbed = {
   embed_code?: string | null
 }
 
-export type BlockColumnGroup = {
-  id: string
-  sort?: number | null
-  columns: UUID[] | BlockColumns[]
-}
-
 export type BlockColumns = {
   id: string
   sort?: number | null
   size?: string | null
-  blocks: UUID[] | BlockColumnsBlocks[]
+  blocks: number[] | BlockColumnsBlocks[]
+  column_tree: number[] | BlockColumns[]
 }
 
 export type BlockColumnsBlocks = {
@@ -119,11 +114,7 @@ export type BlockColumnsBlocks = {
   block_column_id?: string | BlockColumns | null
 }
 
-export type BlockColumnsBlockItem =
-  | BlockRichtext
-  | BlockEmbed
-  | BlockHero
-  | BlockColumnGroup
+export type BlockColumnsBlockItem = BlockRichtext | BlockEmbed | BlockHero
 
 export type Category = {
   id: string
@@ -148,7 +139,7 @@ export type CategoryBlockItem =
   | BlockRichtext
   | BlockEmbed
   | BlockHero
-  | BlockColumnGroup
+  | BlockColumns
 
 export type CategoriesFiles = {
   categories_id?: string | null
@@ -688,7 +679,7 @@ export type PageBlockItem =
   | BlockPosts
   | BlockRichtext
   | BlockEmbed
-  | BlockColumnGroup
+  | BlockColumns
 
 export type Pages = {
   blocks: UUID[] | PageBlocks[]
@@ -772,7 +763,6 @@ export type DBSchema = {
   block_richtext: BlockRichtext[]
   block_richtext_translations: BlockRichtextTranslations[]
   block_embed: BlockEmbed[]
-  block_column_group: BlockColumnGroup[]
   block_columns: BlockColumns[]
   block_columns_blocks: BlockColumnsBlocks[]
   /** System collections */

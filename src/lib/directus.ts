@@ -6,6 +6,7 @@ import {
   staticToken,
 } from "@directus/sdk"
 import type {
+  CategoriesBlocks,
   CategoriesPosts,
   DBSchema,
   NavigationItems,
@@ -260,17 +261,62 @@ export async function getPost(id: string) {
   return post[0]
 }
 
+const smallBlocksQuery = {
+  block_posts: ["*"],
+  block_embed: ["*"],
+  block_hero: ["*", { image: ["*"], translations: ["*"] }],
+  block_richtext: [
+    "*",
+    {
+      translations: ["*"],
+    },
+  ],
+} as const
+
 export const commonBlocksQuery = [
   "*",
   {
     item: {
-      block_posts: ["*"],
-      block_embed: ["*"],
-      block_hero: ["*", { image: ["*"], translations: ["*"] }],
-      block_richtext: [
-        "*",
+      ...smallBlocksQuery,
+      block_columns: [
+        "id",
+        "size",
+        "sort",
         {
-          translations: ["*"],
+          blocks: ["*", { item: smallBlocksQuery }],
+          column_tree: [
+            "id",
+            "size",
+            "sort",
+            {
+              blocks: ["*", { item: smallBlocksQuery }],
+              column_tree: [
+                "id",
+                "size",
+                "sort",
+                {
+                  blocks: ["*", { item: smallBlocksQuery }],
+                  column_tree: [
+                    "id",
+                    "size",
+                    "sort",
+                    {
+                      blocks: ["*", { item: smallBlocksQuery }],
+                      column_tree: [
+                        "id",
+                        "size",
+                        "sort",
+                        {
+                          blocks: ["*", { item: smallBlocksQuery }],
+                          column_tree: ["*"],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       ],
     },
@@ -280,6 +326,7 @@ export const commonBlocksQuery = [
 export async function getCategories(language: string) {
   const rows = await directus.request(
     readItems("categories", {
+      backlink: false,
       fields: [
         "*",
         {
@@ -304,7 +351,7 @@ export async function getCategories(language: string) {
       background: category.background,
       permalink: category.permalink,
       postIds,
-      blocks: category.blocks,
+      blocks: category.blocks as CategoriesBlocks[],
       link: getRelativeLocaleUrl(language, `/archive/${category.permalink}`, {
         normalizeLocale: false,
       }),
@@ -320,6 +367,7 @@ export async function getPage(link: string) {
           _eq: link,
         },
       },
+      backlink: false,
       fields: [
         "*",
         { translations: ["*"] },

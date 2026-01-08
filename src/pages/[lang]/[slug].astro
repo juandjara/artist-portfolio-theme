@@ -15,6 +15,7 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
           _eq: "published",
         },
       },
+      backlink: false,
       fields: [
         "*",
         { translations: ["*"] },
@@ -39,7 +40,10 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
 
           return {
             params: { lang, slug },
-            props: { title, blocks: p.blocks },
+            props: {
+              title,
+              blocks: p.blocks as PageBlocks[]
+            },
           };
         }) satisfies GetStaticPathsResult;
     })
@@ -48,8 +52,8 @@ export async function getStaticPaths(options: GetStaticPathsOptions) {
 
 const title = Astro.props.title;
 const blocks = Astro.props.blocks.filter(
-  (b) => b && typeof b !== "string",
-) as PageBlocks[];
+  (b) => typeof b !== "string" && !!b,
+) ?? [];
 
 ---
 
