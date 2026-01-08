@@ -156,7 +156,13 @@ const description = transformMediaInHTML(post.description)
     if (!lightboxImage || images.length === 0) return
 
     const currentImage = images[currentIndex]
-    lightboxImage.src = currentImage.src
+
+    // Load original size in production (dev env doesn't have optimized images)
+    if (import.meta.env.PROD) {
+      lightboxImage.src = currentImage.src.replace('.webp', '_original.webp') // Load original size
+    } else {
+      lightboxImage.src = currentImage.src
+    }
     lightboxImage.alt = currentImage.alt || "Image"
 
     // Update counter
