@@ -1,10 +1,26 @@
 ---
+import Blocks from "../../components/Blocks.astro";
+import Posts from "../../components/blocks/Posts.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import { getCategories } from "../../lib/directus";
+import type { PageBlocks } from "../../lib/directus.types";
 import { i18nConfig } from "../../lib/i18n";
 
-export function getStaticPaths() {
-  return i18nConfig.locales.map((lang) => ({ params: { lang } }));
+export async function getStaticPaths() {
+  const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
+  const categories = await getCategories(language)
+  const category = categories[0];
+  const blocks = category
+    ? category.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
+    : [];
+
+  return i18nConfig.locales.map((lang) => ({ params: { lang }, props: { blocks } }));
 }
 
-const language = (Astro.params.lang as string) ?? i18nConfig.defaultLocale;
-return Astro.redirect(`/${language}/archive/`);
+const blocks = Astro.props.blocks as PageBlocks[] ?? []
+
 ---
+<BaseLayout>
+  <Blocks blocks={blocks} />
+  <Posts />
+</BaseLayout>
