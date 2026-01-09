@@ -1,31 +1,34 @@
 ---
-import Blocks from "../../components/Blocks.astro";
-import Posts from "../../components/blocks/Posts.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro"
 import { getCategories } from "../../lib/directus";
-import type { PageBlocks } from "../../lib/directus.types";
 import { i18nConfig } from "../../lib/i18n";
+import { getGlobals } from '../../lib/directus';
+import { formatImageURL } from "../../lib/directus";
 
 export async function getStaticPaths() {
   const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
-  const categories = await getCategories(language)
-  const category = categories[0];
-  const blocks = category
-    ? category.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
-    : [];
 
-  return i18nConfig.locales.map((lang) => ({ params: { lang }, props: { blocks, categories } }));
+  const categories = await getCategories(language)
+  const globals = await getGlobals()
+  const video = typeof globals.background_video === 'object' && globals.background_video !== null
+    ? globals.background_video
+    : null;
+  const videoURL = video ? formatImageURL(video.id, undefined, video.type) : ''
+
+  return i18nConfig.locales.map((lang) => ({ params: { lang }, props: { videoURL, categories } }));
 }
 
-const blocks = Astro.props.blocks;
+const videoURL = Astro.props.videoURL;
 const categories = Astro.props.categories.filter(cat => cat.status === 'visible')
 const lang = Astro.params.lang;
 
 ---
 <BaseLayout showHeader={false} showFooter={false}>
-  <video autoplay muted loop class="fixed inset-0 w-auto object-cover min-h-full overflow-hidden">
-    <source src="/assets/index_video.mp4" type="video/mp4" />
-  </video>
+  <video
+    src={videoURL}
+    autoplay muted loop
+    class="fixed inset-0 w-auto object-cover min-h-full overflow-hidden"
+  />
   <div class="absolute inset-0 flex flex-col items-center justify-center">
     <div class="absolute top-3 right-3">
       <a href={`/${lang}/about`} class="text-shadow px-3 py-2 text-xl hover:underline">About</a>
@@ -41,8 +44,6 @@ const lang = Astro.params.lang;
       ))}
     </div>
   </div>
-  <!-- <Blocks blocks={blocks} />
-  <Posts /> -->
 </BaseLayout>
 <style>
   .text-shadow {
