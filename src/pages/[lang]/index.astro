@@ -14,13 +14,42 @@ export async function getStaticPaths() {
     ? category.blocks.filter((b) => b && typeof b !== "string") as PageBlocks[]
     : [];
 
-  return i18nConfig.locales.map((lang) => ({ params: { lang }, props: { blocks } }));
+  return i18nConfig.locales.map((lang) => ({ params: { lang }, props: { blocks, categories } }));
 }
 
-const blocks = Astro.props.blocks as PageBlocks[] ?? []
+const blocks = Astro.props.blocks;
+const categories = Astro.props.categories.filter(cat => cat.status === 'visible')
+const lang = Astro.params.lang;
 
 ---
-<BaseLayout>
-  <Blocks blocks={blocks} />
-  <Posts />
+<BaseLayout showHeader={false} showFooter={false}>
+  <video autoplay muted loop class="fixed inset-0 w-auto object-cover min-h-full overflow-hidden">
+    <source src="/assets/index_video.mp4" type="video/mp4" />
+  </video>
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <div class="absolute top-3 right-3">
+      <a href={`/${lang}/about`} class="text-shadow px-3 py-2 text-xl hover:underline">About</a>
+    </div>
+    <a href={`/${lang}/archive`} class="mb-8">
+      <h1 class="font-serif text-shadow text-white text-8xl">Nes Garc&iacute;a</h1>
+    </a>
+    <div class="flex items-center gap-6">
+      {categories.map((cat) => (
+        <a href={`/${lang}/archive/${cat.permalink}`} class="text-shadow uppercase font-light text-3xl hover:underline">
+          {cat.name}
+        </a>
+      ))}
+    </div>
+  </div>
+  <!-- <Blocks blocks={blocks} />
+  <Posts /> -->
 </BaseLayout>
+<style>
+  .text-shadow {
+    text-shadow: 0 0 10px rgba(0,0,0,.5);
+  }
+  a {
+    color: var(--background-light);
+  }
+</style>
+ 

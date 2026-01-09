@@ -14,9 +14,13 @@ import { i18nConfig } from "../lib/i18n";
 
 interface Props {
   pageTitle?: string
+  showHeader?: boolean
+  showFooter?: boolean
 }
 
 const pageTitle = Astro.props.pageTitle;
+const showHeader = Astro.props.showHeader ?? true;
+const showFooter = Astro.props.showFooter ?? true;
 
 const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 const menus = await directus.request(
@@ -64,15 +68,15 @@ const favicon = formatImageURL(faviconFile?.id, undefined, faviconFile?.type) ??
     <title>{title}</title>
   </head>
   <body class="flex flex-col">
-    <Header
+    {showHeader && <Header
       menuItems={items}
       favicon={favicon}
       title={translations?.title ?? ""}
       description={description}
-    />
+    />}
     <main class="flex-grow">
       <slot />
     </main>
-    <Footer socialLinks={socialLinks} />
+    {showFooter && <Footer socialLinks={socialLinks} />}
   </body>
 </html>
