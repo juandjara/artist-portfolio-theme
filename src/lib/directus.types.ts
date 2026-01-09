@@ -622,6 +622,7 @@ export type Globals = {
   logo?: string | DirectusFiles | null
   logo_dark_mode?: string | DirectusFiles | null
   meta_header_globals: string
+  background_video?: string | DirectusFiles | null
   social_links?: { url: string; icon: string; title: string }[] | null
   translations: UUID[] | GlobalsTranslations[]
 }
