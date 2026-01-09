@@ -217,13 +217,23 @@ async function collectAssetIds(): Promise<Set<string>> {
   // 1. Globals (favicon)
   const globals = await directus.request(
     readSingleton("globals", {
-      fields: ["*", { favicon: ["*"] }],
+      fields: ["*", { favicon: ["*"], background_video: ["*"] }],
     }),
   )
 
+  if (
+    globals.background_video &&
+    typeof globals.background_video === "object"
+  ) {
+    if (globals.background_video.id) {
+      assetIds.add(globals.background_video.id)
+    }
+  }
+
   if (globals.favicon && typeof globals.favicon === "object") {
-    const favicon = globals.favicon as any
-    if (favicon.id) assetIds.add(favicon.id)
+    if (globals.favicon.id) {
+      assetIds.add(globals.favicon.id)
+    }
   }
 
   // 2. Posts
