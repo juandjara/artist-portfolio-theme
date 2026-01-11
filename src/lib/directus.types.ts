@@ -720,7 +720,24 @@ export type Posts = {
   status: string
   translations: UUID[] | PostsTranslations[]
   tags?: string | null
+  blocks?: UUID[] | PostBlocks[]
 }
+
+export type PostBlocks = {
+  background?: string | null
+  collection?: string | null
+  hide_block?: boolean | null
+  id: string
+  item?: string | PostBlockItem | null
+  page?: string | Pages | null
+  sort?: number | null
+}
+
+export type PostBlockItem =
+  | BlockHero
+  | BlockRichtext
+  | BlockEmbed
+  | BlockColumns
 
 export type PostsTranslations = {
   content?: string | null

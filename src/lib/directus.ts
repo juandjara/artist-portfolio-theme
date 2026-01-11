@@ -246,7 +246,10 @@ export async function getPosts(
 export async function getAllPosts() {
   const allPosts = (await directus.request(
     readItems("posts", {
-      fields: ["*", { translations: ["*"], image: ["*"] }],
+      fields: [
+        "*",
+        { translations: ["*"], image: ["*"], blocks: commonBlocksQuery },
+      ],
     }),
   )) as Posts[]
   return allPosts
