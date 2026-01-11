@@ -12,6 +12,7 @@ const language = Astro.currentLocale ?? i18nConfig.defaultLocale;
 
 const imageFile = typeof block.image === "object" && block.image ? block.image : null
 const imageURL = formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? ""
+const isVideo = (imageFile?.type ?? '').startsWith("video/")
 const translations = getTranslations(block.translations, language)
 const title = translations?.title ?? ''
 const description = translations?.description ?? ''
@@ -24,7 +25,11 @@ const showContent = !!title || !!description
 <div class={`hero hero--${layout}`}>
   {imageURL && 
     <div class="hero__image">
-      <img src={imageURL} alt={imageFile?.description ?? title} />
+      {isVideo ? (
+        <video src={imageURL} class="w-full h-full" autoplay muted loop controls />
+      ) : (
+        <img src={imageURL} alt={imageFile?.description ?? title} />
+      )}
     </div>
   }
   {showContent && (
