@@ -33,6 +33,7 @@ const PUBLIC_ASSETS_DIR = path.join(process.cwd(), "public", "assets")
 const CACHE_FILENAME = ".asset-cache.json"
 const CACHE_FILE = path.join(PUBLIC_ASSETS_DIR, CACHE_FILENAME)
 const MAX_WIDTH = 1000
+const VIDEO_MAX_WIDTH = 1920
 const IMAGE_QUALITY = 80
 const VIDEO_CRF = 28 // Constant Rate Factor (lower = better quality, 18-28 is good)
 
@@ -99,9 +100,9 @@ async function optimizeVideo(
   // Calculate new dimensions maintaining aspect ratio
   let newWidth = width
   let newHeight = height
-  if (width > MAX_WIDTH) {
-    newWidth = MAX_WIDTH
-    newHeight = Math.round((height * MAX_WIDTH) / width)
+  if (width > VIDEO_MAX_WIDTH) {
+    newWidth = VIDEO_MAX_WIDTH
+    newHeight = Math.round((height * VIDEO_MAX_WIDTH) / width)
     // Ensure even numbers for video encoding
     newHeight = newHeight % 2 === 0 ? newHeight : newHeight + 1
   }
