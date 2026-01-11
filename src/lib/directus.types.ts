@@ -116,6 +116,12 @@ export type BlockColumnsBlocks = {
 
 export type BlockColumnsBlockItem = BlockRichtext | BlockEmbed | BlockHero
 
+export type BlockImage = {
+  id: string
+  size?: string | null
+  file?: string | DirectusFiles | null
+}
+
 export type Category = {
   id: string
   background?: string | DirectusFiles | null
