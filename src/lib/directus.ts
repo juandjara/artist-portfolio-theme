@@ -1,6 +1,7 @@
 import {
   createDirectus,
   readItems,
+  readSingleton,
   readTranslations,
   rest,
   staticToken,
@@ -245,7 +246,10 @@ export async function getPosts(
 export async function getAllPosts() {
   const allPosts = (await directus.request(
     readItems("posts", {
-      fields: ["*", { translations: ["*"], image: ["*"] }],
+      fields: [
+        "*",
+        { translations: ["*"], image: ["*"], blocks: commonBlocksQuery },
+      ],
     }),
   )) as Posts[]
   return allPosts
@@ -387,4 +391,13 @@ export async function translateString(key: string, langKey: string) {
   )
   const item = data.find((d) => d.language === mapTranslation(langKey))
   return item?.value ?? key
+}
+
+export async function getGlobals() {
+  const globals = await directus.request(
+    readSingleton("globals", {
+      fields: ["*", { favicon: ["*"], background_video: ["*"] }],
+    }),
+  )
+  return globals
 }

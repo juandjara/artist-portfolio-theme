@@ -622,6 +622,7 @@ export type Globals = {
   logo?: string | DirectusFiles | null
   logo_dark_mode?: string | DirectusFiles | null
   meta_header_globals: string
+  background_video?: string | DirectusFiles | null
   social_links?: { url: string; icon: string; title: string }[] | null
   translations: UUID[] | GlobalsTranslations[]
 }
@@ -719,7 +720,24 @@ export type Posts = {
   status: string
   translations: UUID[] | PostsTranslations[]
   tags?: string | null
+  blocks?: UUID[] | PostBlocks[]
 }
+
+export type PostBlocks = {
+  background?: string | null
+  collection?: string | null
+  hide_block?: boolean | null
+  id: string
+  item?: string | PostBlockItem | null
+  page?: string | Pages | null
+  sort?: number | null
+}
+
+export type PostBlockItem =
+  | BlockHero
+  | BlockRichtext
+  | BlockEmbed
+  | BlockColumns
 
 export type PostsTranslations = {
   content?: string | null
