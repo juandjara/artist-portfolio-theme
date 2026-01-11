@@ -275,6 +275,7 @@ const smallBlocksQuery = {
       translations: ["*"],
     },
   ],
+  block_image: ["*", { file: ["*"] }],
 } as const
 
 export const commonBlocksQuery = [

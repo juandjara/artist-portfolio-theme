@@ -101,6 +101,16 @@ body {
   max-width: 960px;
 }
 
+.block_image,
+.block_image-inner {
+  margin: 0;
+  padding: 0;
+}
+
+.block_image-inner {
+  margin: 10px;
+}
+
 /* .block_embed-inner {
   position: relative;
   overflow: hidden;

@@ -3,6 +3,7 @@ import type { PageBlockItem, PageBlocks } from "../lib/directus.types";
 import ColumnGroup from "./blocks/ColumnGroup.astro";
 import Embed from "./blocks/Embed.astro";
 import Hero from "./blocks/Hero.astro";
+import Image from "./blocks/Image.astro";
 import Posts from "./blocks/Posts.astro";
 import RichText from "./blocks/RichText.astro";
 
@@ -24,6 +25,7 @@ const blocks = (Astro.props.blocks ?? [])
         block_embed: Embed,
         block_hero: Hero,
         block_columns: ColumnGroup,
+        block_image: Image
       };
       const Component = (componentMap[
         b.collection as keyof typeof componentMap
@@ -34,7 +36,7 @@ const blocks = (Astro.props.blocks ?? [])
       }) => null;
 
       return (
-        <section class={`${b.background} ${b.collection} my-2`}>
+        <section class={`${b.background} block-wrapper ${b.collection} my-2`}>
           <div
             class={`${b.collection}-inner px-3 py-1 rounded-lg dark:bg-[var(--background-dark)]`}
           >

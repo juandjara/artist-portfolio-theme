@@ -1,0 +1,27 @@
+---
+import { formatImageURL } from "../../lib/directus"
+import type { BlockImage } from "../../lib/directus.types"
+
+interface Props {
+  block: BlockImage
+}
+
+const block = Astro.props.block
+
+const imageFile = typeof block.file === "object" && block.file ? block.file : null
+const imageURL = formatImageURL(imageFile?.id, undefined, imageFile?.type) ?? ""
+const isVideo = (imageFile?.type ?? '').startsWith("video/")
+const size = block.size ?? ''
+---
+
+{isVideo ? (
+  <video src={imageURL} class="w-full h-full" autoplay muted loop controls />
+) : (
+  <img src={imageURL} class="w-full h-full" />
+)}
+
+<style define:vars={{ size }}>
+  img, video {
+    width: var(--size_style);
+  }
+</style>
