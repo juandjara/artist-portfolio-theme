@@ -1,21 +1,55 @@
 ---
 import type { Globals } from "../lib/directus.types";
-import { Icon } from "astro-icon/components";
+import { findIconDefinition, icon, library, type IconName } from '@fortawesome/fontawesome-svg-core';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { socialIcons } from '../lib/icons'
+
+library.add(fab)
 
 interface Props {
   socialLinks: NonNullable<Globals["social_links"]>;
 }
 
-const items = Astro.props.socialLinks;
 const editUrl = import.meta.env.DIRECTUS_URL
----
+const links = Astro.props.socialLinks
 
+const items = links.map((i) => {
+  const isSocialIcon = socialIcons.includes(i.icon)
+  if (isSocialIcon) {
+    const iconDef = findIconDefinition({ prefix: 'fab', iconName: i.icon as IconName })
+    const html = icon(iconDef).html
+    return {
+      title: i.title,
+      url: i.url,
+      iconKey: i.icon,
+      isSocialIcon,
+      iconData: html
+    }
+  } else {
+    return {
+      title: i.title,
+      url: i.url,
+      isSocialIcon,
+      iconKey: i.icon,
+    }
+  }
+})
+
+const iconNames = links.map((i) => i.icon).filter((i) => !socialIcons.includes(i)).join(',')
+
+---
+<link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=${iconNames}`} />
+<style></style>
 <footer class="mt-6 py-6">
   <div class="pb-2 md:flex items-end gap-4">
     {
-      items.map(({ icon, title, url }) => (
+      items.map(({ iconKey, iconData, isSocialIcon, title, url }) => (
         <a href={url} class="hover:underline my-2 flex items-end gap-1">
-          <Icon class="w-6 h-6" name={`fa-brands:${icon}`} />
+          {isSocialIcon ? (
+            <span data-icon={iconKey} data-icon-social={isSocialIcon} class="w-6 h-6" set:html={iconData}></span>
+          ) : (
+            <span data-icon={iconKey} data-icon-social={isSocialIcon} class="w-6 h-6 material-symbols-outlined">{iconKey}</span>
+          )}
           <span class="text-lg leading-none capitalize">{title}</span>
         </a>
       ))
