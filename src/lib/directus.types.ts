@@ -789,6 +789,7 @@ export type DBSchema = {
   block_embed: BlockEmbed[]
   block_columns: BlockColumns[]
   block_columns_blocks: BlockColumnsBlocks[]
+  block_image: BlockImage[]
   /** System collections */
   directus_access: DirectusAccess[]
   directus_activity: DirectusActivity[]

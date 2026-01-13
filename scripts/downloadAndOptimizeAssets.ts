@@ -7,7 +7,7 @@ import {
   rest,
   staticToken,
 } from "@directus/sdk"
-import type { DBSchema } from "../src/lib/directus.types"
+import type { DBSchema, DirectusFiles } from "../src/lib/directus.types"
 import fs from "fs"
 import path from "path"
 import { promisify } from "util"
@@ -210,143 +210,110 @@ async function processAsset(
   }
 }
 
+const assetsRegex = /\/assets\/([a-f0-9-]+)/g
+
 async function collectAssetIds(): Promise<Set<string>> {
   const assetIds = new Set<string>()
 
   console.log("🔍 Scanning content for assets...\n")
 
-  // 1. Globals (favicon)
+  // 0. Utils
+  type Translation = {
+    content?: string | null
+    description?: string | null
+  }
+
+  function checkTranslations(translations: string[] | Translation[] | null) {
+    const ids = []
+    for (const t of translations ?? []) {
+      const isObject = !!t && typeof t === "object"
+      if (isObject) {
+        const matches = t.content?.matchAll(assetsRegex)
+        for (const match of matches ?? []) {
+          ids.push(match[1])
+        }
+        const matches2 = t.description?.matchAll(assetsRegex)
+        for (const match2 of matches2 ?? []) {
+          ids.push(match2[1])
+        }
+      }
+    }
+    return ids
+  }
+
+  function checkFile(file: DirectusFiles | string | null | undefined) {
+    const isString = file && typeof file === "string"
+    if (isString) {
+      return file
+    }
+    const isObject = file && typeof file === "object"
+    if (isObject && file.id) {
+      return file.id
+    }
+    return null
+  }
+
+  // 1. Globals
   const globals = await directus.request(
     readSingleton("globals", {
-      fields: ["*", { favicon: ["*"], background_video: ["*"] }],
+      fields: ["*"],
     }),
   )
 
-  if (
-    globals.background_video &&
-    typeof globals.background_video === "object"
-  ) {
-    if (globals.background_video.id) {
-      assetIds.add(globals.background_video.id)
-    }
+  const backgroundId = checkFile(globals.background_video)
+  if (backgroundId) {
+    assetIds.add(backgroundId)
   }
 
-  if (globals.favicon && typeof globals.favicon === "object") {
-    if (globals.favicon.id) {
-      assetIds.add(globals.favicon.id)
-    }
+  const faviconId = checkFile(globals.favicon)
+  if (faviconId) {
+    assetIds.add(faviconId)
   }
 
   // 2. Posts
   const posts = await directus.request(
     readItems("posts", {
-      fields: ["*", { translations: ["*"], image: ["*"] }],
+      fields: ["*", { translations: ["*"] }],
     }),
   )
 
-  posts.forEach((post: any) => {
-    if (post.image?.id) assetIds.add(post.image.id)
-    post.translations?.forEach((trans: any) => {
-      if (trans.content) {
-        const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
-        for (const match of matches) assetIds.add(match[1])
-      }
-    })
+  posts.forEach((post) => {
+    const imageId = checkFile(post.image)
+    if (imageId) {
+      assetIds.add(imageId)
+    }
+    const translationAssets = checkTranslations(post.translations)
+    for (const id of translationAssets) {
+      assetIds.add(id)
+    }
   })
 
-  // 3. Categories
-  const categories = await directus.request(
-    readItems("categories", {
-      fields: [
-        "*",
-        {
-          background: ["*"],
-          blocks: [
-            "*",
-            {
-              item: {
-                block_richtext: ["*", { translations: ["*"] }],
-                block_gallery: [
-                  "*",
-                  { items: ["*", { directus_file: ["*"] }] },
-                ],
-              },
-            },
-          ],
-        },
-      ],
+  // 3. Rich text block (this will fetch blocks for everything, posts, page, and categories)
+  const textBlocks = await directus.request(
+    readItems("block_richtext", {
+      fields: ["*", { translations: ["*"] }],
+    }),
+  )
+  for (const block of textBlocks) {
+    const ids = checkTranslations(block.translations)
+    for (const id of ids) {
+      assetIds.add(id)
+    }
+  }
+
+  // 4. Image block (this will fetch blocks for everything, posts, page, and categories)
+  const imageBlocks = await directus.request(
+    readItems("block_image", {
+      fields: ["*"],
     }),
   )
 
-  categories.forEach((category: any) => {
-    if (category.background?.id) assetIds.add(category.background.id)
-    category.blocks?.forEach((block: any) => {
-      if (block.item) {
-        const item = block.item as any
-        if (item.translations) {
-          item.translations.forEach((trans: any) => {
-            if (trans.content) {
-              const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
-              for (const match of matches) assetIds.add(match[1])
-            }
-          })
-        }
-        if (item.items) {
-          item.items.forEach((galleryItem: any) => {
-            if (galleryItem.directus_file?.id)
-              assetIds.add(galleryItem.directus_file.id)
-          })
-        }
-      }
-    })
-  })
-
-  // 4. Pages
-  const pages = await directus.request(
-    readItems("pages", {
-      fields: [
-        "*",
-        {
-          blocks: [
-            "*",
-            {
-              item: {
-                block_richtext: ["*", { translations: ["*"] }],
-                block_gallery: [
-                  "*",
-                  { items: ["*", { directus_file: ["*"] }] },
-                ],
-                block_hero: ["*", { image: ["*"] }],
-              },
-            },
-          ],
-        },
-      ],
-    }),
-  )
-
-  pages.forEach((page: any) => {
-    page.blocks?.forEach((block: any) => {
-      if (block.item) {
-        const item = block.item as any
-        if (item.translations) {
-          item.translations.forEach((trans: any) => {
-            if (trans.content) {
-              const matches = trans.content.matchAll(/\/assets\/([a-f0-9-]+)/g)
-              for (const match of matches) assetIds.add(match[1])
-            }
-          })
-        }
-        if (item.items) {
-          item.items.forEach((galleryItem: any) => {
-            if (galleryItem.directus_file?.id)
-              assetIds.add(galleryItem.directus_file.id)
-          })
-        }
-        if (item.image?.id) assetIds.add(item.image.id)
-      }
-    })
-  })
+  for (const block of imageBlocks) {
+    const imageId = checkFile(block.file)
+    if (imageId) {
+      assetIds.add(imageId)
+    }
+  }
 
   console.log(`   - Found ${assetIds.size} unique assets`)
   return assetIds
