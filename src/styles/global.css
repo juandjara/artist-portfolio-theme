@@ -2,7 +2,7 @@
 
 :root {
   --background-light: #222222; /* color de fondo */ /*antes #fbfbfb */ /* antes antes #ebe8db */
-  --panel-light: #f2f3ff; /* color de pastillas */ /*antes #ffe4e6 */
+  --panel-light: #464646; /* color de pastillas */ /*antes #f2f3ff */ /*antes antes #ffe4e6 */
   --panel-transparent-light: color-mix(
     in oklab,
     var(--panel-light) 50%,
