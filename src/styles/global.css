@@ -1,4 +1,9 @@
-@import "./fonts.css";
+@import "@fontsource-variable/space-grotesk";
+
+@import "tailwindcss";
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background-light: #222222; /* color de fondo */ /*antes 2 #fbfbfb */ /* antes 1 #ebe8db */
@@ -20,6 +25,13 @@
   );
   --link-dark: #d17d98;
   --text-dark: #f4cce9;
+}
+
+@theme {
+  /** Para texto normal */
+  --font-sans: "Space Grotesk Variable", sans-serif;
+  /** Para encabezados */
+  /* --font-serif: var("--font-heading", serif); */
 }
 
 html {

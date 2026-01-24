@@ -1,9 +1,0 @@
-@import "tailwindcss";
-@plugin '@tailwindcss/typography';
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  /* --font-sans: 'Ranade-Variable', sans-serif; */
-  --font-sans: "Space Grotesk Variable", sans-serif;
-}
