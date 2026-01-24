@@ -62,8 +62,8 @@ function isCatSelected(id: string) {
       />
     </a>
     <div class="flex-grow">
-      <h1 class="text-link text-4xl font-medium">{title}</h1>
-      <p>{category?.name}</p>
+      <h1 class="text-body text-4xl font-medium">{title}</h1>
+      <p class="text-primary">{category?.name}</p>
     </div>
     <Hamburger />
     <nav id="nav-links" class="is-hidden transition-opacity absolute z-20 top-16 -right-2">
@@ -74,11 +74,11 @@ function isCatSelected(id: string) {
               href={c.link}
               class:list={[
                 {
-                  'bg-[var(--panel-light)]': isCatSelected(c.permalink ?? ''),
-                  'bg-[var(--background-light)] hover:bg-[var(--panel-light)]': !isCatSelected(c.permalink ?? ''),
+                  'bg-[var(--panel-transparent-light)]': isCatSelected(c.permalink ?? ''),
+                  'bg-[var(--background-light)] hover:bg-[var(--panel-transparent-light)]': !isCatSelected(c.permalink ?? ''),
                   'opacity-50': c.status === 'protected'
                 },
-                'block my-1.5 px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light)]'
+                'text-body block my-1.5 px-3 py-1 text-lg shadow hover:shadow-md transition-colors rounded-lg border border-[var(--link-light-transparent)]'
               ]}
             >{c.name}</a>
           </li>

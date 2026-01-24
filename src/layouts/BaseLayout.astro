@@ -57,7 +57,7 @@ const faviconFile = typeof global.favicon === 'object' && global.favicon ? globa
 const favicon = formatImageURL(faviconFile?.id, undefined, faviconFile?.type) ?? "";
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/jpg" href={favicon} />

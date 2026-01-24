@@ -89,9 +89,9 @@ export default function PostGrid({
               style={{
                 "--tw-shadow": "3px 3px 1px 0px var(--link-light)",
               }}
-              className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md transition-shadow hover:shadow-md dark:shadow-rose-200"
+              className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-md transition-shadow hover:shadow-md"
             >
-              <div className="absolute inset-0 z-10 transition-transform duration-300 ease-out transform-3d group-hover:scale-110">
+              <div className="transform-3d absolute inset-0 z-10 transition-transform duration-300 ease-out group-hover:scale-110">
                 <img
                   className="h-full w-full rounded-md object-cover object-center"
                   src={`${p.image}?width=300&height=300`}
@@ -101,7 +101,7 @@ export default function PostGrid({
                 />
               </div>
             </a>
-            {p.title && <p class="text-link pt-1 text-base">{p.title}</p>}
+            {p.title && <p class="text-body pt-1 text-base">{p.title}</p>}
             {p.subtitle && (
               <p class="text-primary pb-1 text-sm">{p.subtitle}</p>
             )}

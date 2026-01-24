@@ -34,21 +34,21 @@ const description = transformMediaInHTML(post.description)
   >&#8672; Back</a
 >
 <div class="mb-8">
-  <h2 class="text-link text-3xl font-medium">{post.title}</h2>
+  <h2 class="text-body text-3xl font-medium">{post.title}</h2>
   {post.subtitle && (
-    <p class="text-lg">{post.subtitle}</p>
+    <p class="text-lg text-primary">{post.subtitle}</p>
   )}
 </div>
 <Blocks blocks={post.blocks} />
 <div class="max-w-prose mx-auto mt-4">
   <div
-    class="prose mt-2 mb-6 flex-grow dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-lg prose-video:w-full prose-video:my-2"
+    class="prose mt-2 mb-6 flex-grow dark:prose-invert prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-img:rounded-lg prose-video:w-full prose-video:my-2"
   >
     <Fragment set:html={content} />
   </div>
   {
     post.description ? (
-      <div class="prose mt-2 mb-6 dark:prose-invert prose-headings:underline prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-a:text-blue-500 prose-img:rounded-xl">
+      <div class="prose mt-2 mb-6 dark:prose-invert prose-h1:text-xl prose-h1:font-bold prose-p:text-justify prose-img:rounded-xl">
         <Fragment set:html={description} />
       </div>
     ) : null

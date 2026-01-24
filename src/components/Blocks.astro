@@ -36,9 +36,9 @@ const blocks = (Astro.props.blocks ?? [])
       }) => null;
 
       return (
-        <section class={`${b.background} block-wrapper ${b.collection} my-2`}>
+        <section class={`block-wrapper ${b.collection} my-2`}>
           <div
-            class={`${b.collection}-inner px-3 py-1 rounded-lg dark:bg-[var(--background-dark)]`}
+            class={`${b.collection}-inner px-3 py-1 rounded-lg`}
           >
             <Component block={b.item as PageBlockItem} />
           </div>
