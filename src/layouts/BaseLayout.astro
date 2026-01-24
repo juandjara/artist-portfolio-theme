@@ -65,6 +65,8 @@ const favicon = formatImageURL(faviconFile?.id, undefined, faviconFile?.type) ??
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <!-- enlace a la fuente -->
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@1&f[]=bebas-neue@400&f[]=switzer@1&display=swap" rel="stylesheet"> 
   </head>
   <body class="flex flex-col">
     {showHeader && <Header

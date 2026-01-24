@@ -27,11 +27,16 @@
   --text-dark: #f4cce9;
 }
 
+/** Fuentes */
 @theme {
   /** Para texto normal */
-  --font-sans: "Space Grotesk Variable", sans-serif;
+  --font-serif: "Bebas Neue", serif;
   /** Para encabezados */
-  /* --font-serif: var("--font-heading", serif); */
+  --font-sans: "Switzer", sans-serif;
+}
+
+.font-sans-2 {
+  font-family: "General Sans", sans-serif;
 }
 
 html {
