@@ -274,6 +274,7 @@ async function collectAssetIds(): Promise<Set<string>> {
   const posts = await directus.request(
     readItems("posts", {
       fields: ["*", { translations: ["*"] }],
+      limit: -1,
     }),
   )
 
@@ -292,6 +293,7 @@ async function collectAssetIds(): Promise<Set<string>> {
   const textBlocks = await directus.request(
     readItems("block_richtext", {
       fields: ["*", { translations: ["*"] }],
+      limit: -1,
     }),
   )
   for (const block of textBlocks) {
@@ -305,6 +307,7 @@ async function collectAssetIds(): Promise<Set<string>> {
   const imageBlocks = await directus.request(
     readItems("block_image", {
       fields: ["*"],
+      limit: -1,
     }),
   )
 
