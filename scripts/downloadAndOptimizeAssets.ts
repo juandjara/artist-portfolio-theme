@@ -289,7 +289,7 @@ async function collectAssetIds(): Promise<Set<string>> {
     }
   })
 
-  // 3. Rich text block (this will fetch blocks for everything, posts, page, and categories)
+  // 3. Rich text block and protected rich text blocks (this will fetch blocks for everything, posts, page, and categories)
   const textBlocks = await directus.request(
     readItems("block_richtext", {
       fields: ["*", { translations: ["*"] }],
@@ -297,6 +297,18 @@ async function collectAssetIds(): Promise<Set<string>> {
     }),
   )
   for (const block of textBlocks) {
+    const ids = checkTranslations(block.translations)
+    for (const id of ids) {
+      assetIds.add(id)
+    }
+  }
+  const protectedRichTextBlocks = await directus.request(
+    readItems("block_protected_richtext", {
+      fields: ["*", { translations: ["*"] }],
+      limit: -1,
+    }),
+  )
+  for (const block of protectedRichTextBlocks) {
     const ids = checkTranslations(block.translations)
     for (const id of ids) {
       assetIds.add(id)
