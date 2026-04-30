@@ -1,0 +1,15 @@
+---
+import type { BlockProtectedRichText } from "../../lib/directus.types"
+import ProtectedRichText from "./ProtectedRichText"
+
+interface Props {
+  language: string
+  block: Partial<BlockProtectedRichText>
+}
+
+---
+<ProtectedRichText
+  client:load
+  language={Astro.props.language}
+  block={Astro.props.block}
+/>

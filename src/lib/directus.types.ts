@@ -94,6 +94,19 @@ export type BlockRichtextTranslations = {
   languages_code?: string | Languages | null
 }
 
+export type BlockProtectedRichText = {
+  id: number
+  password_hash: string
+  translations: UUID[] | BlockProtectedRichtextTranslations[]
+}
+
+export type BlockProtectedRichtextTranslations = {
+  block_protected_richtext_id?: number | BlockProtectedRichText | null
+  content?: string | null
+  id: number
+  languages_code?: string | Languages | null
+}
+
 export type BlockEmbed = {
   id: string
   embed_code?: string | null
@@ -685,6 +698,7 @@ export type PageBlockItem =
   | BlockHero
   | BlockPosts
   | BlockRichtext
+  | BlockProtectedRichText
   | BlockEmbed
   | BlockColumns
 
@@ -786,6 +800,9 @@ export type DBSchema = {
   block_posts: BlockPosts[]
   block_richtext: BlockRichtext[]
   block_richtext_translations: BlockRichtextTranslations[]
+  block_protected_richtext: BlockProtectedRichText[]
+  block_protected_richtext_translations: BlockProtectedRichtextTranslations[]
+  block_password_richtext: BlockProtectedRichText[]
   block_embed: BlockEmbed[]
   block_columns: BlockColumns[]
   block_columns_blocks: BlockColumnsBlocks[]

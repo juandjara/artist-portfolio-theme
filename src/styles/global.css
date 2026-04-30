@@ -102,6 +102,18 @@ body {
   max-width: 960px;
 }
 
+.block_protected_richtext-inner form {
+  margin: 12px 0;
+}
+.block_protected_richtext-inner input {
+  border: 1px solid var(--panel-transparent-light);
+  padding: 4px 12px;
+}
+.block_protected_richtext-inner button {
+  border: 1px solid var(--panel-transparent-light);
+  padding: 4px 12px;
+}
+
 .block_image,
 .block_image-inner {
   margin: 0;

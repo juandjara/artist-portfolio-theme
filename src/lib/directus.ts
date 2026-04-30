@@ -13,37 +13,17 @@ import type {
   NavigationItems,
   Pages,
   Posts,
-  TranslationsCommon,
 } from "./directus.types"
 import { getRelativeLocaleUrl } from "astro:i18n"
+import { getTranslations, mapTranslation } from "./translations"
+
+export { getTranslations, mapTranslation } from "./translations"
 
 const directus = createDirectus<DBSchema>(import.meta.env.DIRECTUS_URL)
   .with(rest())
   .with(staticToken(import.meta.env.DIRECTUS_TOKEN))
 
 export default directus
-
-const translationMap = {
-  es: "es-ES",
-  en: "en-US",
-  ja: "ja-JP",
-}
-
-function mapTranslation(langKey: string) {
-  return translationMap[langKey as keyof typeof translationMap] || langKey
-}
-
-// anything on T can be "undefined" if not requested by the client "fields"
-// anything on T can be "null" if is nullable in the DB
-export function getTranslations<T extends TranslationsCommon>(
-  items: (Partial<T> | string)[] | null,
-  langKey: string,
-) {
-  const lang = mapTranslation(langKey)
-  const arr = items ?? []
-  const okItems = arr.filter((a) => a && typeof a !== "string") as Partial<T>[]
-  return okItems.find((item) => item.languages_code === lang)
-}
 
 // MIME type to extension mapping
 function getExtensionFromMimeType(mimeType: string): string {
@@ -275,6 +255,7 @@ const smallBlocksQuery = {
       translations: ["*"],
     },
   ],
+  block_protected_richtext: ["id"],
   block_image: ["*", { file: ["*"] }],
 } as const
 
