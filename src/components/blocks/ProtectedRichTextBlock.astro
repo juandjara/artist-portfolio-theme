@@ -1,15 +1,30 @@
 ---
+import { translateString } from "../../lib/directus"
 import type { BlockProtectedRichText } from "../../lib/directus.types"
+import { i18nConfig } from "../../lib/i18n"
 import ProtectedRichText from "./ProtectedRichText"
 
 interface Props {
-  language: string
   block: Partial<BlockProtectedRichText>
+}
+
+const block = Astro.props.block
+const language = Astro.currentLocale ?? i18nConfig.defaultLocale
+const _labels = await Promise.all([
+  translateString('protected-text-title', language),
+  translateString('protected-text-placeholder', language),
+  translateString('send', language),
+])
+const labels = {
+  title: _labels[0],
+  placeholder: _labels[1],
+  button: _labels[2]
 }
 
 ---
 <ProtectedRichText
   client:load
-  language={Astro.props.language}
-  block={Astro.props.block}
+  language={language}
+  block={block}
+  labels={labels}
 />
